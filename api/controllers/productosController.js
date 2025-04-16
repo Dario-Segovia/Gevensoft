@@ -23,12 +23,21 @@ const getProductosPorCategoria = async (req, res) => {
 
   try {
     const query = `
-      SELECT p.id_producto, p."Nombre", p."DescripcionCorta", p."DescripcionLarga", p."Coste"
+      SELECT 
+        p.id_producto, 
+        p."Nombre", 
+        p."DescripcionCorta", 
+        p."DescripcionLarga", 
+        p."Coste",
+        g."Url_imagen"
       FROM "Producto" p
       JOIN "Categoria_asociada" ca ON p.id_producto = ca.id_producto
+      LEFT JOIN "Variante" v ON p.id_producto = v.id_producto  -- Relación con Variante
+      LEFT JOIN "Galeria" g ON v.id_variante = g.id_variante  -- Relación con Galeria
       WHERE ca.id_categoria = $1
       ORDER BY p."Nombre"
     `;
+    
     const result = await pool.query(query, [parseInt(idCategoria, 10)]);
     res.json(result.rows);
   } catch (err) {
@@ -36,6 +45,7 @@ const getProductosPorCategoria = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
+
 
 const getProductosMasPedidos = async (req, res) => {
   try {
