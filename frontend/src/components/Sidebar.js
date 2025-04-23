@@ -8,8 +8,9 @@ const Sidebar = ({ categorias, onClickCategoria }) => {
       <h2>Categorías</h2>
       <ul>
         {categorias.map((cat) => (
-          <li key={cat.id_categoria} onClick={() => onClickCategoria(cat.id_categoria)}>
-            {cat.Descripcion}
+          <li key={cat.id_categoria} onClick={() => onClickCategoria(cat.id_categoria)} className="sidebar-item">
+            <img src={cat.icono} alt={cat.Descripcion} className="icono-categoria" />
+            <span>{cat.Descripcion}</span>
           </li>
         ))}
       </ul>

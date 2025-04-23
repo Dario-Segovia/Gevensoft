@@ -63,8 +63,36 @@ const getProductosMasPedidos = async (req, res) => {
   }
 };
 
+
+
+const getProductos = async (req, res) => {
+  try {
+    const query = `
+      SELECT 
+        p.id_producto, 
+        p."Nombre", 
+        p."DescripcionCorta", 
+        p."DescripcionLarga", 
+        p."Coste",
+        g."Url_imagen"
+      FROM "Producto" p
+      LEFT JOIN "Variante" v ON p.id_producto = v.id_producto  -- Relación con Variante
+      LEFT JOIN "Galeria" g ON v.id_variante = g.id_variante  -- Relación con Galeria
+      ORDER BY p."Nombre"
+    `;
+    
+    const result = await pool.query(query);
+    res.json(result.rows);
+  } catch (err) {
+    console.error("Error ejecutando la consulta:", err.message);
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
 module.exports = {
   getCategorias,
   getProductosPorCategoria,
   getProductosMasPedidos,
+  getProductos
 };
