@@ -4,7 +4,7 @@ import "./ProductList.css"; // Asegúrate de que tienes el archivo CSS correspon
 const ProductList = ({ productos }) => {
   return (
     <div className="product-list">
-      {productos.map((producto) => (
+      {Array.isArray(productos) && productos.map((producto) => (
         <div className="product-card" key={producto.id_producto}>
           {producto.Url_imagen && (
             <img
@@ -22,6 +22,10 @@ const ProductList = ({ productos }) => {
       ))}
     </div>
   );
+};
+
+ProductList.defaultProps = {
+  productos: [] // Valor por defecto como array vacío
 };
 
 export default ProductList;
