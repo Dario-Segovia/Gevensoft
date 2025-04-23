@@ -23,7 +23,7 @@ const getProductosPorCategoria = async (req, res) => {
 
   try {
     const query = `
-      SELECT 
+      SELECT DISTINCT
         p.id_producto, 
         p."Nombre", 
         p."DescripcionCorta", 
@@ -68,7 +68,7 @@ const getProductosMasPedidos = async (req, res) => {
 const getProductos = async (req, res) => {
   try {
     const query = `
-      SELECT 
+      SELECT DISTINCT
         p.id_producto, 
         p."Nombre", 
         p."DescripcionCorta", 
