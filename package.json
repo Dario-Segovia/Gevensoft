@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "lodash.debounce": "^4.0.8",
-    "react-range-slider-input": "^3.2.1"
-  }
-}

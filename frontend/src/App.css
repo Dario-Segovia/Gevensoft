@@ -1,9 +1,10 @@
 /* .app-container debería ser flexible */
 .app-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   min-height: 100vh;
 }
+
 
 /* La cabecera sigue igual */
 .header {
