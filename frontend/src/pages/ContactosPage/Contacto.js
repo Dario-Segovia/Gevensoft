@@ -67,7 +67,8 @@ function Contacto() {
       <div className="map-section">
         <iframe
           title="ubicacion"
-          src={`https://maps.google.com/maps?q=${encodeURIComponent(`${empresaData.direccion}, ${empresaData.codigo_postal}, ${empresaData.poblacion}, ${empresaData.provincia}, ${empresaData.pais}`)}&output=embed`}          width="100%"
+          src={`https://maps.google.com/maps?q=${encodeURIComponent(`${empresaData.direccion}, ${empresaData.codigo_postal}, ${empresaData.poblacion}, ${empresaData.provincia}, ${empresaData.pais}`)}&output=embed`}
+          width="100%"
           height="400"
           style={{ border: 0 }}
           allowFullScreen
