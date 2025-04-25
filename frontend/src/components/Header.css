@@ -45,5 +45,29 @@
   
   transform: translateY(-1px);
 }
+/* Nuevos estilos para el logo */
+.header-branding {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
 
+.header-logo {
+  max-width: 50px;
+  height: auto;
+  border-radius: 4px;
+  margin-right: 0.5rem;
+}
 
+/* Ajuste para mantener la alineación original */
+.header h1 {
+  margin: 0;
+  white-space: nowrap;
+}
+
+/* Mejora hover para coincidir con tu estilo existente */
+.nav-button:hover {
+  background-color: #3498db;
+  color: white;
+  transform: translateY(-1px);
+}
