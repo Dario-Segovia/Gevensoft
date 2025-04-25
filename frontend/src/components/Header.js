@@ -30,11 +30,13 @@ function Header() {
     <header className="header">
       <div className="header-branding">
         {empresaData?.logo && (
-          <img 
-            src={empresaData.logo} 
-            alt={`Logo ${empresaData.nombre}`} 
-            className="header-logo"
-          />
+          <Link to="/"> {/* Envolvemos el logo con el Link */}
+            <img 
+              src={empresaData.logo} 
+              alt={`Logo ${empresaData.nombre}`} 
+              className="header-logo"
+            />
+          </Link>
         )}
         <h1 className="header-title">{empresaData?.nombre || 'Mi Restaurante'}</h1>
       </div>

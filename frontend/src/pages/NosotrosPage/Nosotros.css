@@ -1,0 +1,72 @@
+/* Nosotros.css */
+
+.nosotros-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: #333;
+    line-height: 1.6;
+  }
+  
+  .hero {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  
+  .logo {
+    max-width: 150px;
+    margin-bottom: 1rem;
+  }
+  
+  .hero h1 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+  }
+  
+  .descripcion, .valores, .ubicacion {
+    margin-bottom: 2.5rem;
+  }
+  
+  .descripcion h2,
+  .valores h2,
+  .ubicacion h2 {
+    font-size: 1.8rem;
+    color: #34495e;
+    margin-bottom: 1rem;
+    border-left: 4px solid #3498db;
+    padding-left: 0.75rem;
+  }
+  
+  .valores ul {
+    list-style: none;
+    padding: 0;
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+  
+  .valores li {
+    background-color: #ecf0f1;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    flex: 1 1 120px;
+    text-align: center;
+  }
+  
+  .footer-nosotros {
+    border-top: 1px solid #ccc;
+    padding-top: 1.5rem;
+    text-align: center;
+    font-style: italic;
+    color: #777;
+  }
+  
+  @media (max-width: 768px) {
+    .valores ul {
+      flex-direction: column;
+      align-items: stretch;
+    }
+  }
+  
