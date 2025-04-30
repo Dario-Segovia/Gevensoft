@@ -1,8 +1,8 @@
 const express = require("express");
 const cors = require("cors");
 
-const productosRoutes = require("./routes/productosRoutes"); // o como tengas tus rutas
-const empresaRoute = require("./routes/empresaRoute"); // o como tengas tus rutas
+const productosRoutes = require("./routes/productosRoutes"); 
+const empresaRoute = require("./routes/empresaRoute"); 
 
 const app = express();
 
@@ -12,7 +12,7 @@ app.use(cors());
 // 👇 Parseo de JSON en las peticiones
 app.use(express.json());
 
-// 👇 Tus rutas de la API
+
 app.use("/api", productosRoutes);
 app.use("/api", empresaRoute);
 

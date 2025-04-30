@@ -54,6 +54,12 @@ function Header() {
         <Link to="/contacto" className="nav-button">
           Contacto
         </Link>
+        <Link to="/carrito" className="nav-button">
+          Carrito
+        </Link>
+
+
+
       </nav>
     </header>
   );

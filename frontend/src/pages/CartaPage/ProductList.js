@@ -2,12 +2,16 @@ import React, { useState, useEffect, useCallback } from "react";
 import RangeSlider from "react-range-slider-input";
 import "react-range-slider-input/dist/style.css";
 import "./ProductList.css";
-import debounce from 'lodash.debounce';
+import debounce from "lodash.debounce";
+import { FaShoppingCart } from "react-icons/fa";
+import { useCart } from "../../components/CartContext.jsx";
 
 const ProductList = ({ productos }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [priceRange, setPriceRange] = useState([0, 10]);
   const [sliderValue, setSliderValue] = useState([0, 10]);
+
+  const { agregarAlCarrito } = useCart();
 
   useEffect(() => {
     if (productos.length > 0) {
@@ -58,13 +62,13 @@ const ProductList = ({ productos }) => {
 
         <div className="price-filter">
           <label>
-            Rango de precio: {sliderValue[0].toFixed(2)} € - {sliderValue[1].toFixed(2)} €
+            Rango de precio: {sliderValue[0].toFixed(2)} € -{" "}
+            {sliderValue[1].toFixed(2)} €
           </label>
-          {/* Slider que permite valores con céntimos */}
           <RangeSlider
             min={0}
             max={10}
-            step={0.01} 
+            step={0.01}
             value={sliderValue}
             onInput={handleSliderChange}
           />
@@ -85,11 +89,19 @@ const ProductList = ({ productos }) => {
               <h3 className="product-name">{producto.Nombre}</h3>
               <p className="product-description">{producto.DescripcionCorta}</p>
               <p className="product-cost">
-                {typeof producto.Coste === 'number' 
-                  ? producto.Coste.toFixed(2) 
-                  : parseFloat(producto.Coste).toFixed(2)} €
+                {typeof producto.Coste === "number"
+                  ? producto.Coste.toFixed(2)
+                  : parseFloat(producto.Coste).toFixed(2)}{" "}
+                €
               </p>
             </div>
+            <button
+              className="add-to-cart-button"
+              onClick={() => agregarAlCarrito(producto)}
+              title="Agregar al carrito"
+            >
+              <FaShoppingCart />
+            </button>
           </div>
         ))}
       </div>
