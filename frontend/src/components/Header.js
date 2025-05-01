@@ -1,12 +1,17 @@
 import { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import { FaShoppingCart } from 'react-icons/fa';
+import { useCart } from "../components/CartContext.jsx";
 import "./Header.css";
 
 function Header() {
+  const { carrito } = useCart(); // Accedemos al carrito del contexto
   const [empresaData, setEmpresaData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  
+  // Calcular total de items
+  const totalItems = carrito.reduce((total, item) => total + item.cantidad, 0);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -57,6 +62,9 @@ function Header() {
         </Link>
         <Link to="/carrito" className="nav-button nav-icon" aria-label="Carrito">
           <FaShoppingCart style={{ fontSize: '1.5rem' }} />
+          {totalItems > 0 && (
+            <span className="cart-badge">{totalItems}</span>
+          )}
         </Link>
 
 
