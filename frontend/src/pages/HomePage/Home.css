@@ -8,7 +8,6 @@
   
   /* Hero section */
   .hero-section {
-    background-image: url('https://www.peru.travel/Contenido/AcercaDePeru/Imagen/es/1/0.0/Principal/Machu%20Picchu.jpg'); /* Cambia esta URL por la imagen de fondo que prefieras */
     background-size: cover;
     background-position: center;
     height: 100vh;
