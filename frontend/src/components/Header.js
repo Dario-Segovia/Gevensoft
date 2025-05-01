@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
+import { FaShoppingCart } from 'react-icons/fa';
 import "./Header.css";
 
 function Header() {
@@ -54,8 +55,8 @@ function Header() {
         <Link to="/contacto" className="nav-button">
           Contacto
         </Link>
-        <Link to="/carrito" className="nav-button">
-          Carrito
+        <Link to="/carrito" className="nav-button nav-icon" aria-label="Carrito">
+          <FaShoppingCart style={{ fontSize: '1.5rem' }} />
         </Link>
 
 
