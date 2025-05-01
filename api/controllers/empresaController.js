@@ -11,6 +11,19 @@ const getEmpresa = async (req, res) => {
   }
 };
 
+const getEmpresaWeb = async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT * FROM "Empresa_web" WHERE id_empresa = 1'
+    );
+    res.json(result.rows);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+
 module.exports = {
-    getEmpresa
+    getEmpresa,
+    getEmpresaWeb
 };
