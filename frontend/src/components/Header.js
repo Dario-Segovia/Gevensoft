@@ -46,7 +46,7 @@ function Header() {
           Home
         </Link>
         <Link to="/carta" className="nav-button">
-          Nuestra Carta
+          Productos
         </Link>
         <Link to="/nosotros" className="nav-button">
           Sobre Nosotros
