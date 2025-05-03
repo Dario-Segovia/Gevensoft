@@ -16,36 +16,7 @@ function Carta() {
         
         const categoriasResponse = await fetch("http://localhost:3000/api/categorias");
         const categoriasData = await categoriasResponse.json();
-
-        const categoriasConIconos = categoriasData.map((cat) => {
-          let icono = "";
-
-          switch (cat.Descripcion) {
-            case "Entrantes":
-              icono = "categorias/entrantes.png";
-              break;
-            case "Panes":
-              icono = "categorias/panes.png";
-              break;
-            case "Pastas":
-              icono = "categorias/pastas.png";
-              break;
-            case "Pizzas":
-              icono = "categorias/pizzas.png";
-              break;
-            case "Bebidas":
-              icono = "categorias/bebidas.png";
-              break;
-            default:
-              icono = "/img/default.png";
-              break;
-          }
-
-          return { ...cat, icono };
-        });
-
-        setCategorias(categoriasConIconos);
-
+        setCategorias(categoriasData);
         const productosResponse = await fetch("http://localhost:3000/api/productos");
         const productosData = await productosResponse.json();
         setProductos(productosData);
