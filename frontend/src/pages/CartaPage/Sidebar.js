@@ -1,5 +1,6 @@
 // src/components/Sidebar.js
 import React, { useState } from "react";
+import { useTranslation } from "react-i18next"; // Importa el hook para traducción
 import "./Sidebar.css";
 
 const buildCategoryTree = (categories) => {
@@ -30,7 +31,7 @@ const buildCategoryTree = (categories) => {
   return rootCategories;
 };
 
-const CategoryItem = ({ category, onClickCategoria, isParent }) => {
+const CategoryItem = ({ category, onClickCategoria, isParent, t }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   
   const handleToggle = (e) => {
@@ -51,7 +52,7 @@ const CategoryItem = ({ category, onClickCategoria, isParent }) => {
           alt={category.Descripcion} 
           className="icono-categoria" 
         />
-        <span>{category.Descripcion}</span>
+        <span>{t(`categoria.${category.Descripcion.toLowerCase()}`)}</span> {/* Traducir el nombre de la categoría */}
         
         {isParent && (
           <span 
@@ -71,6 +72,7 @@ const CategoryItem = ({ category, onClickCategoria, isParent }) => {
               category={child}
               onClickCategoria={onClickCategoria}
               isParent={child.children.length > 0}
+              t={t} // Pasar la función de traducción
             />
           ))}
         </ul>
@@ -80,12 +82,13 @@ const CategoryItem = ({ category, onClickCategoria, isParent }) => {
 };
 
 const Sidebar = ({ categorias, onClickCategoria }) => {
+  const { t } = useTranslation(); // Usar el hook de traducción
   const [expandedCategories, setExpandedCategories] = useState({});
   const categoryTree = buildCategoryTree(categorias);
 
   return (
     <aside className="sidebar">
-      <h2>Categorías</h2>
+      <h2>{t("sidebar.categorias")}</h2> {/* Traducir el título */}
       <ul>
         {categoryTree.map(category => (
           <CategoryItem
@@ -93,6 +96,7 @@ const Sidebar = ({ categorias, onClickCategoria }) => {
             category={category}
             onClickCategoria={onClickCategoria}
             isParent={category.children.length > 0}
+            t={t} // Pasar la función de traducción
           />
         ))}
       </ul>

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Link } from "react-router-dom";
 import { FaShoppingCart } from 'react-icons/fa';
 import { useCart } from "../components/CartContext.jsx";
+import LanguageSwitcher from '../LanguageSwitcher';  // Asegúrate de importar el componente
 import "./Header.css";
 
 function Header() {
@@ -9,7 +10,7 @@ function Header() {
   const [empresaData, setEmpresaData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   // Calcular total de items
   const totalItems = carrito.reduce((total, item) => total + item.cantidad, 0);
 
@@ -66,10 +67,12 @@ function Header() {
             <span className="cart-badge">{totalItems}</span>
           )}
         </Link>
-
-
-
       </nav>
+
+      {/* Agrega el LanguageSwitcher donde quieras en el header */}
+      <div className="language-switcher-container">
+        <LanguageSwitcher />
+      </div>
     </header>
   );
 }

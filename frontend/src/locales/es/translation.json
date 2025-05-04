@@ -1,0 +1,103 @@
+{
+  "common": {
+    "buscar_producto": "Buscar producto...",
+    "rango_precio": "Rango de precio",
+    "agregar_al_carrito": "Agregar al carrito",
+    "telefono": "Teléfono",
+    "correo_electronico": "Correo Electrónico",
+    "ubicacion": "Ubicación",
+    "cargando": "Cargando...",
+    "error_cargar_info": "Error al cargar la información"
+  },
+  "productos": {
+    "Cerveza artesanal": "Cerveza artesanal",
+    "De producción local": "De producción local",
+    "Agua mineral": "Agua mineral",
+    "Botella de 50cl": "Botella de 50cl",
+    "Agua natural sin gas": "Agua natural sin gas",
+    "Cerveza rubia suave elaborada artesanalmente": "Cerveza rubia suave elaborada artesanalmente",
+    "Ensalada César": "Ensalada César",
+    "Fresca y saludable": "Fresca y saludable",
+    "Fettuccine Alfredo": "Fettuccine Alfredo",
+    "Pasta cremosa": "Pasta cremosa",
+    "Pasta con salsa Alfredo y parmesano": "Pasta con salsa Alfredo y parmesano",
+    "Lasaña boloñesa": "Lasaña boloñesa",
+    "Clásica italiana": "Clásica italiana",
+    "Lasaña de carne con salsa boloñesa y bechamel": "Lasaña de carne con salsa boloñesa y bechamel",
+    "Pan de ajo": "Pan de ajo",
+    "Ideal como entrante": "Ideal como entrante",
+    "Pan horneado con mantequilla de ajo y perejil": "Pan horneado con mantequilla de ajo y perejil",
+    "Pan integral": "Pan integral",
+    "Alternativa saludable": "Alternativa saludable",
+    "Pan casero elaborado con harina integral": "Pan casero elaborado con harina integral",
+    "Pizza 4 quesos": "Pizza 4 quesos",
+    "Intensa en sabor": "Intensa en sabor",
+    "Mozzarella, gorgonzola, parmesano y emmental": "Mozzarella, gorgonzola, parmesano y emmental",
+    "Pizza Margarita": "Pizza Margarita",
+    "Tradicional": "Tradicional",
+    "Pizza con tomate, mozzarella y albahaca": "Pizza con tomate, mozzarella y albahaca",
+    "Refresco cola": "Refresco cola",
+    "Clásico y burbujeante": "Clásico y burbujeante",
+    "Lata de 33cl de refresco de cola": "Lata de 33cl de refresco de cola",
+    "Tabla de quesos": "Tabla de quesos",
+    "Selección de quesos": "Selección de quesos",
+    "Variados quesos artesanos con frutos secos": "Variados quesos artesanos con frutos secos"
+  },
+  "SobreNosotros": {
+    "sobre": "Sobre",
+    "quienes_somos": "¿Quiénes somos?",
+    "fundada": "Fundada en",
+    "nuestros_valores": "Nuestros valores",
+    "ubicacion": "Ubicación",
+    "nombre": "TechNova Solutions",
+    "razon_social": "TechNova S.A.",
+    "cif": "B12345678",
+    "direccion": "Calle Futura 12",
+    "codigo_postal": "28001",
+    "poblacion": "Madrid",
+    "provincia": "Madrid",
+    "pais": "España",
+    "telefono": "+34 911 123 456",
+    "email": "info@technova.com",
+    "web": "https://www.technova.com",
+    "logo": "https://pbs.twimg.com/media/ERv_whhXYAAw0rH.jpg",
+    "firma_factura": "firma_technova.png",
+    "texto_footer": "Gracias por confiar en TechNova.",
+    "fecha_alta": "2023-05-14T22:00:00.000Z",
+    "activo": true
+  },
+  "valores": {
+    "compromiso": "Compromiso",
+    "innovacion": "Innovación",
+    "calidad": "Calidad",
+    "transparencia": "Transparencia"
+  },
+
+  "home": {
+    "welcome_title": "Bienvenido a Mi Restaurante",
+    "welcome_text": "Un lugar donde la comida se convierte en una experiencia única. Disfruta de platos deliciosos y de una atmósfera acogedora.",
+    "about_title": "Sobre Nosotros",
+    "about_text": "Con más de 20 años de experiencia, nuestro restaurante ofrece una fusión de sabores locales e internacionales. Nos apasiona la comida y creemos que cada plato cuenta una historia.",
+    "customer_title": "Lo que dicen nuestros clientes",
+    "customer_satisfied": "¡Una experiencia increíble! La comida es deliciosa y el ambiente es perfecto para una noche especial.",
+    "customer_appreciated": "El mejor restaurante de la ciudad. Volveré sin duda. ¡Recomiendo probar el plato del día!",
+    "contact_title": "¿Te gustaría visitarnos?",
+    "contact_text": "Estamos ubicados en el corazón de la ciudad, listos para ofrecerte lo mejor de la gastronomía.",
+    "button_explora": "Explora nuestros Productos",
+    "button_historia": "Conoce nuestra Historia",
+    "button_contacto": "Contáctanos",
+    "cliente_satisfecho": "Cliente Satisfecho",
+    "cliente_apreciado": "Cliente Apreciado"  
+  },
+  
+  "categoria": {
+    "bebidas": "Bebidas",
+    "entrantes": "Entrantes",
+    "panes": "Panes",
+    "pastas": "Pastas",
+    "pizzas": "Pizzas"
+  },
+  "sidebar": {
+    "categorias": "Categorías"
+  }
+}

@@ -5,6 +5,7 @@ import "./ProductList.css";
 import debounce from "lodash.debounce";
 import { FaShoppingCart } from "react-icons/fa";
 import { useCart } from "../../components/CartContext.jsx";
+import { useTranslation } from "react-i18next"; // <-- Importar i18n
 
 const ProductList = ({ productos }) => {
   const [searchTerm, setSearchTerm] = useState("");
@@ -12,6 +13,7 @@ const ProductList = ({ productos }) => {
   const [sliderValue, setSliderValue] = useState([0, 10]);
 
   const { agregarAlCarrito } = useCart();
+  const { t } = useTranslation(); // <-- Inicializar i18n
 
   useEffect(() => {
     if (productos.length > 0) {
@@ -25,7 +27,7 @@ const ProductList = ({ productos }) => {
 
   const filteredProducts = productos.filter(
     (producto) =>
-      producto.Nombre.toLowerCase().includes(searchTerm.toLowerCase()) &&
+      t(`productos.${producto.Nombre}`).toLowerCase().includes(searchTerm.toLowerCase()) &&
       producto.Coste >= priceRange[0] &&
       producto.Coste <= priceRange[1]
   );
@@ -54,7 +56,7 @@ const ProductList = ({ productos }) => {
       <div className="filters-container">
         <input
           type="text"
-          placeholder="Buscar producto..."
+          placeholder={t("common.buscar_producto")}
           value={searchTerm}
           onChange={handleSearch}
           className="search-bar"
@@ -62,8 +64,7 @@ const ProductList = ({ productos }) => {
 
         <div className="price-filter">
           <label>
-            Rango de precio: {sliderValue[0].toFixed(2)} € -{" "}
-            {sliderValue[1].toFixed(2)} €
+            {t("common.rango_precio")}: {sliderValue[0].toFixed(2)} € - {sliderValue[1].toFixed(2)} €
           </label>
           <RangeSlider
             min={0}
@@ -81,13 +82,13 @@ const ProductList = ({ productos }) => {
             {producto.Url_imagen && (
               <img
                 src={producto.Url_imagen}
-                alt={producto.Nombre}
+                alt={t(`productos.${producto.Nombre}`)} // Usamos el nombre directamente como clave
                 className="product-image"
               />
             )}
             <div className="product-info">
-              <h3 className="product-name">{producto.Nombre}</h3>
-              <p className="product-description">{producto.DescripcionCorta}</p>
+              <h3 className="product-name">{t(`productos.${producto.Nombre}`)}</h3> {/* Traducción directa */}
+              <p className="product-description">{t(`productos.${producto.DescripcionCorta}`)}</p>
               <p className="product-cost">
                 {typeof producto.Coste === "number"
                   ? producto.Coste.toFixed(2)
@@ -98,7 +99,7 @@ const ProductList = ({ productos }) => {
             <button
               className="add-to-cart-button"
               onClick={() => agregarAlCarrito(producto)}
-              title="Agregar al carrito"
+              title={t("common.agregar_al_carrito")}
             >
               <FaShoppingCart />
             </button>

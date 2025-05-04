@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
-import { FaMapMarkerAlt, FaPhone, FaEnvelope, FaClock, FaGlobe } from "react-icons/fa";
-import { FaFacebook, FaInstagram, FaLinkedin } from "react-icons/fa";
+import { useTranslation } from 'react-i18next';
+import { FaMapMarkerAlt, FaPhone, FaEnvelope } from "react-icons/fa";
 import './Contacto.css';
 
 function Contacto() {
+  const { t } = useTranslation();
   const [empresaData, setEmpresaData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -13,7 +14,7 @@ function Contacto() {
       try {
         const response = await fetch('http://localhost:3000/api/empresa');
         if (!response.ok) {
-          throw new Error('Error al obtener los datos');
+          throw new Error(t("common.error_cargar_info"));
         }
         const data = await response.json();
         setEmpresaData(data[0]);
@@ -25,22 +26,24 @@ function Contacto() {
     };
 
     fetchData();
-  }, []);
+  }, [t]);
 
-  if (loading) return <div className="loading">Cargando...</div>;
-  if (error) return <div className="error">Error: {error}</div>;
+  if (loading) return <div className="loading">{t("common.cargando")}</div>;
+  if (error) return <div className="error">{t("common.error_cargar_info")}</div>;
 
   return (
     <div className="contact-container">
       <div className="company-header">
-        <h1 className="contact-title">Contacto - {empresaData.nombre}</h1>
+        <h1 className="contact-title">
+          {t("SobreNosotros.sobre")} - {empresaData.nombre}
+        </h1>
       </div>
 
       <div className="contact-info-section">
         <div className="contact-item">
           <FaMapMarkerAlt className="contact-icon" />
           <div>
-            <h3>Dirección</h3>
+            <h3>{t("common.ubicacion")}</h3>
             <p>{empresaData.direccion}</p>
             <p>{empresaData.codigo_postal} {empresaData.poblacion}</p>
             <p>{empresaData.provincia}, {empresaData.pais}</p>
@@ -50,7 +53,7 @@ function Contacto() {
         <div className="contact-item">
           <FaPhone className="contact-icon" />
           <div>
-            <h3>Teléfono</h3>
+            <h3>{t("common.telefono")}</h3>
             <p>{empresaData.telefono}</p>
           </div>
         </div>
@@ -58,7 +61,7 @@ function Contacto() {
         <div className="contact-item">
           <FaEnvelope className="contact-icon" />
           <div>
-            <h3>Correo Electrónico</h3>
+            <h3>{t("common.correo_electronico")}</h3>
             <p>{empresaData.email}</p>
           </div>
         </div>

@@ -1,121 +1,134 @@
 /* General container */
 .home-container {
-    font-family: 'Arial', sans-serif;
-    color: #fff;
-    margin: 0;
-    padding: 0;
-  }
-  
-  /* Hero section */
-  .hero-section {
-    background-size: cover;
-    background-position: center;
-    height: 100vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-  }
-  
-  .hero-content {
-    max-width: 600px;
-  }
-  
-  .hero-title {
-    font-size: 3rem;
-    margin-bottom: 20px;
-    color: #fff;
-  }
-  
-  .hero-description {
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-  }
-  
-  .cta-button {
-    background-color: #ff7f50;
-    padding: 15px 25px;
-    font-size: 1rem;
-    text-decoration: none;
-    color: #fff;
-    border-radius: 5px;
-    display: inline-block;
-    transition: background-color 0.3s;
-  }
-  
-  .cta-button:hover {
-    background-color: #ff4500;
-  }
-  
-  /* About Section */
-  .about-section {
-    background-color: #f8f9fa;
-    padding: 60px 20px;
-    text-align: center;
-  }
-  
-  .about-content h2 {
-    font-size: 2.5rem;
-    color: #333;
-    margin-bottom: 20px;
-  }
-  
-  .about-content p {
-    font-size: 1.2rem;
-    color: #555;
-    max-width: 800px;
-    margin: 0 auto 20px;
-  }
-  
-  /* Testimonials Section */
-  .testimonial-section {
-    background-color: #2d2d2d;
-    padding: 60px 20px;
-    text-align: center;
-  }
-  
-  .testimonials {
-    display: flex;
-    justify-content: center;
-    gap: 20px;
-    flex-wrap: wrap;
-  }
-  
-  .testimonial {
-    background-color: #444;
-    padding: 20px;
-    border-radius: 10px;
-    width: 280px;
-  }
-  
-  .testimonial p {
-    font-style: italic;
-    color: #ddd;
-    font-size: 1rem;
-  }
-  
-  .testimonial span {
-    display: block;
-    margin-top: 10px;
-    font-weight: bold;
-    color: #ff7f50;
-  }
-  
-  /* Contact Section */
-  .contact-section {
-    
-    color: #333;
-    padding: 60px 20px;
-    text-align: center;
-  }
-  
-  .contact-section h2 {
-    font-size: 2.5rem;
-    margin-bottom: 20px;
-  }
-  
-  .contact-section p {
-    font-size: 1.2rem;
-    margin-bottom: 30px;
-  }
-  
+  font-family: 'Arial', sans-serif;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+}
+
+/* Hero section */
+.hero-section {
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  text-align: center;
+}
+
+.hero-section::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4); /* Overlay oscuro */
+  z-index: 1;
+}
+
+.hero-content {
+  max-width: 600px;
+  position: relative;
+  z-index: 2; /* Asegura que el contenido esté por encima del overlay */
+}
+
+.hero-title {
+  font-size: 3rem;
+  margin-bottom: 20px;
+  color: #fff;
+}
+
+.hero-description {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+  color: #fff; /* Asegura que el texto sea blanco para un mejor contraste */
+}
+
+.cta-button {
+  background-color: #ff7f50;
+  padding: 15px 25px;
+  font-size: 1rem;
+  text-decoration: none;
+  color: #fff;
+  border-radius: 5px;
+  display: inline-block;
+  transition: background-color 0.3s;
+}
+
+.cta-button:hover {
+  background-color: #ff4500;
+}
+
+/* About Section */
+.about-section {
+  background-color: #f8f9fa;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.about-content h2 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.about-content p {
+  font-size: 1.2rem;
+  color: #555;
+  max-width: 800px;
+  margin: 0 auto 20px;
+}
+
+/* Testimonials Section */
+.testimonial-section {
+  background-color: #2d2d2d;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.testimonials {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.testimonial {
+  background-color: #444;
+  padding: 20px;
+  border-radius: 10px;
+  width: 280px;
+}
+
+.testimonial p {
+  font-style: italic;
+  color: #ddd;
+  font-size: 1rem;
+}
+
+.testimonial span {
+  display: block;
+  margin-top: 10px;
+  font-weight: bold;
+  color: #ff7f50;
+}
+
+/* Contact Section */
+.contact-section {
+  color: #333;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.contact-section h2 {
+  font-size: 2.5rem;
+  margin-bottom: 20px;
+}
+
+.contact-section p {
+  font-size: 1.2rem;
+  margin-bottom: 30px;
+}

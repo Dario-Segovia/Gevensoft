@@ -1,0 +1,107 @@
+{
+  "common": {
+    "buscar_producto": "Search product...",
+    "rango_precio": "Price range",
+    "agregar_al_carrito": "Add to cart",
+    "telefono": "Phone",
+    "correo_electronico": "Email",
+    "ubicacion": "Location",
+    "cargando": "Loading...",
+    "error_cargar_info": "Error loading information"
+  },
+  "productos": {
+    "Cerveza artesanal": "Craft beer",
+    "De producción local": "Locally produced",
+    "Agua mineral": "Mineral water",
+    "Botella de 50cl": "50cl bottle",
+    "Agua natural sin gas": "Still water",
+    "Cerveza rubia suave elaborada artesanalmente": "Smooth blonde beer crafted locally",
+    "Ensalada César": "Caesar Salad",
+    "Fresca y saludable": "Fresh and healthy",
+    "Fettuccine Alfredo": "Fettuccine Alfredo",
+    "Pasta cremosa": "Creamy pasta",
+    "Pasta con salsa Alfredo y parmesano": "Pasta with Alfredo sauce and parmesan",
+    "Lasaña boloñesa": "Bolognese lasagna",
+    "Clásica italiana": "Classic Italian",
+    "Lasaña de carne con salsa boloñesa y bechamel": "Beef lasagna with Bolognese sauce and béchamel",
+    "Pan de ajo": "Garlic bread",
+    "Ideal como entrante": "Ideal as a starter",
+    "Pan horneado con mantequilla de ajo y perejil": "Baked bread with garlic butter and parsley",
+    "Pan integral": "Whole wheat bread",
+    "Alternativa saludable": "Healthy alternative",
+    "Pan casero elaborado con harina integral": "Homemade bread made with whole wheat flour",
+    "Pizza 4 quesos": "Four cheese pizza",
+    "Intensa en sabor": "Intense flavor",
+    "Mozzarella, gorgonzola, parmesano y emmental": "Mozzarella, gorgonzola, parmesan, and emmental",
+    "Pizza Margarita": "Margherita pizza",
+    "Tradicional": "Traditional",
+    "Pizza con tomate, mozzarella y albahaca": "Pizza with tomato, mozzarella, and basil",
+    "Refresco cola": "Cola drink",
+    "Clásico y burbujeante": "Classic and fizzy",
+    "Lata de 33cl de refresco de cola": "33cl can of cola drink",
+    "Tabla de quesos": "Cheese platter",
+    "Selección de quesos": "Cheese selection",
+    "Variados quesos artesanos con frutos secos": "Varied artisan cheeses with nuts"
+  },
+
+  "SobreNosotros": {
+    "sobre": "About",
+    "quienes_somos": "Who we are?",
+    "fundada": "Founded in",
+    "nuestros_valores": "Our values",
+    "ubicacion": "Location",
+    "nombre": "TechNova Solutions",
+    "razon_social": "TechNova S.A.",
+    "cif": "B12345678",
+    "direccion": "Calle Futura 12",
+    "codigo_postal": "28001",
+    "poblacion": "Madrid",
+    "provincia": "Madrid",
+    "pais": "Spain",
+    "telefono": "+34 911 123 456",
+    "email": "info@technova.com",
+    "web": "https://www.technova.com",
+    "logo": "https://pbs.twimg.com/media/ERv_whhXYAAw0rH.jpg",
+    "firma_factura": "firma_technova.png",
+    "texto_footer": "Thank you for trusting TechNova.",
+    "fecha_alta": "2023-05-14T22:00:00.000Z",
+    "activo": true
+  },
+  "valores": {
+    "compromiso": "Commitment",
+    "innovacion": "Innovation",
+    "calidad": "Quality",
+    "transparencia": "Transparency"
+  },
+  "home": {
+    "welcome_title": "Welcome to My Restaurant",
+    "welcome_text": "A place where food becomes a unique experience. Enjoy delicious dishes and a cozy atmosphere.",
+    "about_title": "About Us",
+    "about_text": "With over 20 years of experience, our restaurant offers a fusion of local and international flavors. We are passionate about food and believe every dish tells a story.",
+    "customer_title": "What our customers say",
+    "customer_satisfied": "An amazing experience! The food is delicious and the atmosphere is perfect for a special evening.",
+    "customer_appreciated": "The best restaurant in town. I’ll definitely come back. I highly recommend trying the dish of the day!",
+    "contact_title": "Would you like to visit us?",
+    "contact_text": "We are located in the heart of the city, ready to offer you the best of gastronomy.",
+    "button_explora": "Explore our Products",
+    "button_historia": "Discover our Story",
+    "button_contacto": "Contact Us",
+    "cliente_satisfecho": "Satisfied Customer",
+    "cliente_apreciado": "Appreciated Customer"
+
+  },
+  "categoria": {
+    "bebidas": "Drinks",
+    "entrantes": "Starters",
+    "panes": "Breads",
+    "pastas": "Pasta",
+    "pizzas": "Pizzas"
+  },
+  "sidebar": {
+    "categorias": "Categories"
+  }
+
+  
+
+  
+}
