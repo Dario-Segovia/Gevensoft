@@ -99,8 +99,15 @@
   },
   "sidebar": {
     "categorias": "Categories"
-  }
-
+  },
+  
+  "header": {
+      "home": "Home",
+      "productos": "Products",
+      "sobreNosotros": "About Us",
+      "contacto": "Contact",
+      "carrito": "Cart"
+    }
   
 
   

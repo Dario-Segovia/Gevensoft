@@ -4,8 +4,10 @@ import { FaShoppingCart } from 'react-icons/fa';
 import { useCart } from "../components/CartContext.jsx";
 import LanguageSwitcher from '../LanguageSwitcher';  // Asegúrate de importar el componente
 import "./Header.css";
+import { useTranslation } from "react-i18next"; // Importa el hook para traducción
 
 function Header() {
+  const { t } = useTranslation();
   const { carrito } = useCart(); // Accedemos al carrito del contexto
   const [empresaData, setEmpresaData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -53,13 +55,13 @@ function Header() {
           Home
         </Link>
         <Link to="/carta" className="nav-button">
-          Productos
+        {t("header.productos")}
         </Link>
         <Link to="/nosotros" className="nav-button">
-          Sobre Nosotros
+        {t("header.sobreNosotros")}
         </Link>
         <Link to="/contacto" className="nav-button">
-          Contacto
+        {t("header.contacto")}
         </Link>
         <Link to="/carrito" className="nav-button nav-icon" aria-label="Carrito">
           <FaShoppingCart style={{ fontSize: '1.5rem' }} />

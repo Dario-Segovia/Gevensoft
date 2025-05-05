@@ -99,5 +99,14 @@
   },
   "sidebar": {
     "categorias": "Categorías"
-  }
+  },
+
+
+  "header": {
+      "home": "Home",
+      "productos": "Productos",
+      "sobreNosotros": "Sobre nosotros",
+      "contacto": "Contacto",
+      "carrito": "Carta"
+    }
 }
