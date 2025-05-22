@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next"; // Hook para usar las traducciones
 import "./Nosotros.css";
+import logoLocal from '../../assets/logo.jpg'; 
+
 
 function Nosotros() {
   const { t } = useTranslation();  // Hook para acceder a las traducciones
@@ -32,10 +34,10 @@ function Nosotros() {
       <div className="hero">
         <h1>{t("SobreNosotros.sobre")} {empresa?.nombre}</h1>  {/* Traducción de "Sobre" */}
         {empresa?.logo && (
-          <img
-            src={empresa.logo}
-            alt={`Logo ${empresa?.nombre}`}
-            className="logo"
+              <img 
+            src={logoLocal}
+            alt="Logo del restaurante" 
+            className="header-logo"
           />
         )}
       </div>

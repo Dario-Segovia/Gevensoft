@@ -94,8 +94,8 @@
     "bebidas": "Drinks",
     "entrantes": "Starters",
     "panes": "Breads",
-    "pastas": "Pasta",
-    "pizzas": "Pizzas"
+    "pasta": "Pasta",
+    "pizza": "Pizza"
   },
   "sidebar": {
     "categorias": "Categories"

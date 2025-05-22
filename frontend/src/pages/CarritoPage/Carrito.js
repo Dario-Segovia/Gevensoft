@@ -20,12 +20,24 @@ function Carrito() {
           {carrito.map((item) => (
             <div key={item.id_producto} className="carrito-item">
               <div className="info">
-                <h4>{item.Nombre}</h4>
+                <h4>
+                  {item.variante?.Nombre
+                    ? `${item.Nombre}`
+                    : item.Nombre}
+                </h4>
                 <p>Cantidad: {item.cantidad}</p>
-                <p>Precio: {parseFloat(item.Coste).toFixed(2)} €</p>
+                <p>
+                  Precio:{" "}
+                  {parseFloat(
+                    item.variante?.Precio || item.variante?.Coste || item.Coste
+                  ).toFixed(2)} €
+                </p>
               </div>
               <div className="subtotal">
-                Subtotal: {(item.Coste * item.cantidad).toFixed(2)} €
+                Subtotal: {(
+                  (item.variante?.Precio || item.variante?.Coste || item.Coste) *
+                  item.cantidad
+                ).toFixed(2)} €
                 <button onClick={() => eliminarDelCarrito(item.id_producto)}>
                   ❌
                 </button>

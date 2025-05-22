@@ -5,6 +5,8 @@ import { useCart } from "../components/CartContext.jsx";
 import LanguageSwitcher from '../LanguageSwitcher';  // Asegúrate de importar el componente
 import "./Header.css";
 import { useTranslation } from "react-i18next"; // Importa el hook para traducción
+import logoLocal from '../assets/logo.jpg';
+
 
 function Header() {
   const { t } = useTranslation();
@@ -40,11 +42,12 @@ function Header() {
       <div className="header-branding">
         {empresaData?.logo && (
           <Link to="/"> {/* Envolvemos el logo con el Link */}
-            <img 
-              src={empresaData.logo} 
-              alt={`Logo ${empresaData.nombre}`} 
-              className="header-logo"
-            />
+          <img 
+  src={logoLocal}
+  alt="Logo del restaurante" 
+  className="header-logo"
+/>
+
           </Link>
         )}
         <h1 className="header-title">{empresaData?.nombre || 'Mi Restaurante'}</h1>

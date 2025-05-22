@@ -9,7 +9,6 @@ const {
 
 router.get('/categorias', getCategorias);
 router.get('/productos/categoria/:idCategoria', getProductosPorCategoria);
-router.get('/productos/mas-pedidos', getProductosMasPedidos);
 router.get('/productos',getProductos)
 
 module.exports = router;

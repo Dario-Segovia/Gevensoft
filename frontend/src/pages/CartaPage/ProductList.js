@@ -5,19 +5,23 @@ import "./ProductList.css";
 import debounce from "lodash.debounce";
 import { FaShoppingCart } from "react-icons/fa";
 import { useCart } from "../../components/CartContext.jsx";
-import { useTranslation } from "react-i18next"; // <-- Importar i18n
+import { useTranslation } from "react-i18next";
+import Variantes from "../VariantesPage/Variantes";
+
+const baseURL = "http://localhost:3000";
 
 const ProductList = ({ productos }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [priceRange, setPriceRange] = useState([0, 10]);
   const [sliderValue, setSliderValue] = useState([0, 10]);
+  const [modalProducto, setModalProducto] = useState(null);
 
   const { agregarAlCarrito } = useCart();
-  const { t } = useTranslation(); // <-- Inicializar i18n
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (productos.length > 0) {
-      const precios = productos.map((p) => p.Coste);
+      const precios = productos.map((p) => parseFloat(p.Coste || 0));
       const min = Math.floor(Math.min(...precios));
       const max = Math.ceil(Math.max(...precios));
       setSliderValue([min, max]);
@@ -25,12 +29,27 @@ const ProductList = ({ productos }) => {
     }
   }, [productos]);
 
-  const filteredProducts = productos.filter(
-    (producto) =>
-      t(`productos.${producto.Nombre}`).toLowerCase().includes(searchTerm.toLowerCase()) &&
-      producto.Coste >= priceRange[0] &&
-      producto.Coste <= priceRange[1]
+  const productosConPrimeraVariante = Object.values(
+    productos.reduce((acc, producto) => {
+      const id = producto.id_producto;
+      if (!acc[id]) {
+        acc[id] = producto;
+      }
+      return acc;
+    }, {})
   );
+
+  const filteredProducts = productosConPrimeraVariante.filter((producto) => {
+    if (!producto) return false;
+    const productName = String(producto.Nombre || "");
+    const searchTermLower = String(searchTerm || "").toLowerCase();
+    const productCost = Number(producto.Coste) || 0;
+    return (
+      productName.toLowerCase().includes(searchTermLower) &&
+      productCost >= priceRange[0] &&
+      productCost <= priceRange[1]
+    );
+  });
 
   const handleSearch = (e) => {
     setSearchTerm(e.target.value);
@@ -51,6 +70,10 @@ const ProductList = ({ productos }) => {
     handlePriceChange(sliderValue);
   }, [sliderValue, handlePriceChange]);
 
+  const agregarYCerrar = (item) => {
+    agregarAlCarrito(item);
+  };
+
   return (
     <div className="product-list-container">
       <div className="filters-container">
@@ -64,7 +87,8 @@ const ProductList = ({ productos }) => {
 
         <div className="price-filter">
           <label>
-            {t("common.rango_precio")}: {sliderValue[0].toFixed(2)} € - {sliderValue[1].toFixed(2)} €
+            {t("common.rango_precio")}: {sliderValue[0].toFixed(2)} € -{" "}
+            {sliderValue[1].toFixed(2)} €
           </label>
           <RangeSlider
             min={0}
@@ -77,35 +101,84 @@ const ProductList = ({ productos }) => {
       </div>
 
       <div className="product-list">
-        {filteredProducts.map((producto) => (
-          <div className="product-card" key={producto.id_producto}>
-            {producto.Url_imagen && (
+        {filteredProducts.map((producto) => {
+          const primeraVariante =
+            producto.variantes && producto.variantes.length > 0
+              ? producto.variantes[0]
+              : null;
+          const primeraImagen =
+            primeraVariante?.imagenes?.[0]
+              ? `${baseURL}${primeraVariante.imagenes[0]}`
+              : `${baseURL}/IMG/default.jpg`;
+
+          return (
+            <div key={producto.id_producto} className="product-card">
               <img
-                src={producto.Url_imagen}
-                alt={t(`productos.${producto.Nombre}`)} // Usamos el nombre directamente como clave
+                src={primeraImagen}
+                alt={producto.Nombre}
                 className="product-image"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = `${baseURL}/IMG/default.jpg`;
+                }}
               />
-            )}
-            <div className="product-info">
-              <h3 className="product-name">{t(`productos.${producto.Nombre}`)}</h3> {/* Traducción directa */}
-              <p className="product-description">{t(`productos.${producto.DescripcionCorta}`)}</p>
-              <p className="product-cost">
-                {typeof producto.Coste === "number"
-                  ? producto.Coste.toFixed(2)
-                  : parseFloat(producto.Coste).toFixed(2)}{" "}
-                €
-              </p>
+
+              <div className="product-info">
+                <h3 className="product-name">{producto.Nombre}</h3>
+                <p className="product-description">{producto.DescipcionCorta}</p>
+                <p className="product-cost">
+                  {parseFloat(producto.Coste).toFixed(2)} €
+                </p>
+              </div>
+
+              <button
+                className="add-to-cart-button"
+                onClick={() => {
+                  if (producto.variantes && producto.variantes.length === 1) {
+                    agregarAlCarrito({
+                      id_item: producto.id_producto,
+                      tipo: "producto",
+                      nombre: producto.Nombre,
+                      descripcion: producto.DescipcionCorta,
+                      variante: producto.variantes[0],
+                    });
+                  } else if (producto.variantes && producto.variantes.length > 1) {
+                    setModalProducto(producto);
+                  } else {
+                    agregarAlCarrito({
+                      id_item: producto.id_producto,
+                      tipo: "producto",
+                      nombre: producto.Nombre,
+                      descripcion: producto.DescipcionCorta,
+                    });
+                  }
+                }}
+                title={t("common.agregar_al_carrito")}
+              >
+                <FaShoppingCart />
+              </button>
             </div>
-            <button
-              className="add-to-cart-button"
-              onClick={() => agregarAlCarrito(producto)}
-              title={t("common.agregar_al_carrito")}
-            >
-              <FaShoppingCart />
-            </button>
-          </div>
-        ))}
+          );
+        })}
       </div>
+
+      {modalProducto && (
+        <Variantes
+          producto={modalProducto}
+          onClose={() => setModalProducto(null)}
+          onAgregar={(item) => {
+            // Si hay variante, sobreescribe los datos principales con los de la variante seleccionada
+            const variante = item.variante;
+            agregarAlCarrito({
+              ...item,
+              Nombre: variante?.Nombre || item.Nombre,
+              Coste: variante?.Precio || variante?.Coste || item.Coste,
+              id_variante: variante?.id_variante,
+            });
+            setModalProducto(null);
+          }}
+        />
+      )}
     </div>
   );
 };

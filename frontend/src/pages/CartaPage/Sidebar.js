@@ -1,7 +1,16 @@
-// src/components/Sidebar.js
-import React, { useState } from "react";
-import { useTranslation } from "react-i18next"; // Importa el hook para traducción
+import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import "./Sidebar.css";
+
+// Función para verificar si la imagen existe
+const checkImageExists = async (url) => {
+  return new Promise((resolve) => {
+    const image = new Image();
+    image.onload = () => resolve(true);
+    image.onerror = () => resolve(false);
+    image.src = url;
+  });
+};
 
 const buildCategoryTree = (categories) => {
   const categoryMap = {};
@@ -12,7 +21,9 @@ const buildCategoryTree = (categories) => {
     categoryMap[category.id_categoria] = { 
       ...category, 
       children: [],
-      isExpanded: false
+      isExpanded: false,
+      // Generamos la URL del icono basado en el ID
+      Url_icono: `/categorias/${category.id_categoria}.jpg` // o .png según tu formato
     };
   });
   
@@ -33,7 +44,18 @@ const buildCategoryTree = (categories) => {
 
 const CategoryItem = ({ category, onClickCategoria, isParent, t }) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [iconUrl, setIconUrl] = useState('/categorias/default.jpg');
   
+  // Verificar si la imagen existe al montar el componente
+  useEffect(() => {
+    const verifyImage = async () => {
+      const exists = await checkImageExists(category.Url_icono);
+      setIconUrl(exists ? category.Url_icono : '/categorias/default.jpg');
+    };
+    
+    verifyImage();
+  }, [category.Url_icono]);
+
   const handleToggle = (e) => {
     e.stopPropagation();
     if (isParent) {
@@ -48,11 +70,20 @@ const CategoryItem = ({ category, onClickCategoria, isParent, t }) => {
         onClick={() => !isParent && onClickCategoria(category.id_categoria)}
       >
         <img 
-          src={category.Url_icono} 
+          src={iconUrl} 
           alt={category.Descripcion} 
-          className="icono-categoria" 
+          className="icono-categoria"
+          onError={(e) => {
+            e.target.src = '/categorias/default.jpg';
+          }} 
         />
-        <span>{t(`categoria.${category.Descripcion.toLowerCase()}`)}</span> {/* Traducir el nombre de la categoría */}
+        <span>
+          {t(`categoria.${category.descripcion?.toLowerCase?.() || 'sin_categoria'}`) === 
+           `categoria.${category.descripcion?.toLowerCase?.()}` 
+            ? category.descripcion 
+            : t(`categoria.${category.descripcion?.toLowerCase?.() || 'sin_categoria'}`)
+          }
+        </span>
         
         {isParent && (
           <span 
@@ -72,7 +103,7 @@ const CategoryItem = ({ category, onClickCategoria, isParent, t }) => {
               category={child}
               onClickCategoria={onClickCategoria}
               isParent={child.children.length > 0}
-              t={t} // Pasar la función de traducción
+              t={t}
             />
           ))}
         </ul>
@@ -82,13 +113,19 @@ const CategoryItem = ({ category, onClickCategoria, isParent, t }) => {
 };
 
 const Sidebar = ({ categorias, onClickCategoria }) => {
-  const { t } = useTranslation(); // Usar el hook de traducción
-  const [expandedCategories, setExpandedCategories] = useState({});
-  const categoryTree = buildCategoryTree(categorias);
+  const { t } = useTranslation();
+  const [categoryTree, setCategoryTree] = useState([]);
+
+  // Construir el árbol de categorías y verificar imágenes
+  useEffect(() => {
+    if (categorias && categorias.length > 0) {
+      setCategoryTree(buildCategoryTree(categorias));
+    }
+  }, [categorias]);
 
   return (
     <aside className="sidebar">
-      <h2>{t("sidebar.categorias")}</h2> {/* Traducir el título */}
+      <h2>{t("sidebar.categorias")}</h2>
       <ul>
         {categoryTree.map(category => (
           <CategoryItem
@@ -96,7 +133,7 @@ const Sidebar = ({ categorias, onClickCategoria }) => {
             category={category}
             onClickCategoria={onClickCategoria}
             isParent={category.children.length > 0}
-            t={t} // Pasar la función de traducción
+            t={t}
           />
         ))}
       </ul>

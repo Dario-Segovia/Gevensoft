@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./Home.css";
+import logoLocal from '../../assets/background.jpg'; // Importamos la imagen local
 
 function Home() {
   const { t } = useTranslation();
-  const [empresaweb, setEmpresaWeb] = useState(null);
+  const [empresaweb, setEmpresaWeb] = useState(null); // Puedes eliminar este estado si no necesitas más información de la API
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -14,7 +15,7 @@ function Home() {
       try {
         const res = await fetch("http://localhost:3000/api/empresaweb");
         const data = await res.json();
-        setEmpresaWeb(data[0]);
+        setEmpresaWeb(data[0]); // Si ya no usas esta data, puedes eliminar esta lógica
       } catch (err) {
         setError(t("common.error_cargar_info"));
       } finally {
@@ -32,7 +33,7 @@ function Home() {
     <div className="home-container">
       <section
         className="hero-section"
-        style={{ backgroundImage: `url(${empresaweb?.url_image})` }}
+        style={{ backgroundImage: `url(${logoLocal})` }} // Usamos solo la imagen local
       >
         <div className="hero-content">
           <h1 className="hero-title">{t("home.welcome_title")}</h1>

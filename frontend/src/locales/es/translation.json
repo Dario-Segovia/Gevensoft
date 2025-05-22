@@ -94,8 +94,8 @@
     "bebidas": "Bebidas",
     "entrantes": "Entrantes",
     "panes": "Panes",
-    "pastas": "Pastas",
-    "pizzas": "Pizzas"
+    "pasta": "Pasta",
+    "pizza": "Pizza"
   },
   "sidebar": {
     "categorias": "Categorías"
