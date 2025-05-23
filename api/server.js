@@ -3,7 +3,8 @@ const cors = require("cors");
 const path = require("path");
 
 const productosRoutes = require("./routes/productosRoutes"); 
-const empresaRoute = require("./routes/empresaRoute"); 
+const empresaRoute = require("./routes/empresaRoute");
+const authRoute = require("./routes/authRoute");
 
 const app = express();
 
@@ -19,6 +20,7 @@ app.use('/IMG', express.static(path.join(__dirname, '../frontend/public/IMG')));
 // Rutas de la API
 app.use("/api", productosRoutes);
 app.use("/api", empresaRoute);
+app.use("/api", authRoute);
 
 // Puerto
 const PORT = process.env.PORT || 3000;

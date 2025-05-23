@@ -14,6 +14,7 @@ function Header() {
   const [empresaData, setEmpresaData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [user, setUser] = useState(null);
 
   // Calcular total de items
   const totalItems = carrito.reduce((total, item) => total + item.cantidad, 0);
@@ -32,6 +33,11 @@ function Header() {
       }
     };
     fetchData();
+  }, []);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem('user');
+    if (storedUser) setUser(JSON.parse(storedUser));
   }, []);
 
   if (loading) return <div className="header-loading">Cargando...</div>;
@@ -72,6 +78,18 @@ function Header() {
             <span className="cart-badge">{totalItems}</span>
           )}
         </Link>
+        {user ? (
+          <>
+            <span className="nav-user">Hola, {user.nombre}</span>
+            <button onClick={() => { localStorage.removeItem('user'); setUser(null); }}>
+              Cerrar sesión
+            </button>
+          </>
+        ) : (
+          <Link to="/auth" className="nav-button">
+            {t("header.iniciarSesion")}
+          </Link>
+        )}
       </nav>
 
       {/* Agrega el LanguageSwitcher donde quieras en el header */}
