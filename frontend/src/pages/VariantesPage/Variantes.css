@@ -158,3 +158,25 @@
 .close-button:hover {
   background: #a71d2a;
 }
+
+@media (max-width: 480px) {
+  .modal-content {
+    width: 90%;
+    padding: 15px;
+  }
+  
+  .variante-tab {
+    padding: 8px 12px;
+    font-size: 0.9rem;
+  }
+  
+  .variante-imagen {
+    width: 100px;
+    height: 100px;
+  }
+  
+  .add-main-variant {
+    width: 100%;
+    padding: 12px;
+  }
+}

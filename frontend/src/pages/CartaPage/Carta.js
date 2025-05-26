@@ -62,6 +62,3 @@ function Carta() {
 }
 
 export default Carta;
-
-
-

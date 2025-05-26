@@ -55,3 +55,21 @@
   cursor: pointer;
   font-size: 0.9rem;
 }
+
+@media (max-width: 480px) {
+  .auth-container {
+    margin: 2rem 1rem;
+    padding: 1.5rem;
+    max-width: 100%;
+  }
+  
+  .auth-container input,
+  .auth-container button {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+  
+  .auth-links span {
+    font-size: 0.8rem;
+  }
+}

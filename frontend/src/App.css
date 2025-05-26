@@ -27,5 +27,17 @@
   background-color: #ccc;
 }
 
-
-
+@media (max-width: 768px) {
+  .app-container {
+    flex-direction: column;
+  }
+  
+  .header {
+    padding: 0.5rem;
+  }
+  
+  .nav button {
+    margin: 0 5px;
+    padding: 8px;
+  }
+}

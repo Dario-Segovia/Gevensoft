@@ -61,3 +61,23 @@
 .expand-icon.expanded {
   transform: rotate(90deg);
 }
+
+@media (max-width: 768px) {
+  .sidebar {
+    padding: 10px;
+  }
+  
+  .sidebar-item {
+    padding: 8px;
+  }
+  
+  .icono-categoria {
+    width: 20px;
+    height: 20px;
+  }
+  
+  .nested-categories {
+    margin-left: 10px;
+    padding-left: 5px;
+  }
+}

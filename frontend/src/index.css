@@ -11,3 +11,32 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Mobile First */
+@media (max-width: 768px) {
+  body {
+    font-size: 14px;
+    overflow-x: hidden; /* Previene scroll horizontal */
+  }
+}
+
+/* Tablet */
+@media (min-width: 769px) and (max-width: 1024px) {
+  body {
+    font-size: 15px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 1025px) {
+  body {
+    font-size: 16px;
+  }
+}
+
+/* Ajustes específicos para móvil */
+@media (max-width: 480px) {
+  #root {
+    padding: 0 10px;
+  }
+}

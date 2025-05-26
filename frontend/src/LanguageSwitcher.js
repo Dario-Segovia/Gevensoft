@@ -5,9 +5,13 @@ const LanguageSwitcher = () => {
   const { i18n } = useTranslation();
 
   return (
-    <div style={{ margin: '10px 0' }}>
-      <button onClick={() => i18n.changeLanguage('es')}>🇪🇸 Español</button>
-      <button onClick={() => i18n.changeLanguage('en')}>🇬🇧 English</button>
+    <div className="language-switcher-container">
+      <button onClick={() => i18n.changeLanguage('es')}>
+        <span>🇪🇸</span> Español
+      </button>
+      <button onClick={() => i18n.changeLanguage('en')}>
+        <span>🇬🇧</span> English
+      </button>
     </div>
   );
 };
