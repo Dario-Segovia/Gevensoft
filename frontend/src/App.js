@@ -8,11 +8,13 @@ import Home from "./pages/HomePage/Home";
 import Carrito from "./pages/CarritoPage/Carrito";
 import Auth from "./pages/AuthPage/Auth";
 import ResetPassword from "./pages/ResetPassword/ResetPassword"; // ruta añadida
+import { UserProvider } from "./components/UserContext";
 import "./App.css";
 
 
 function App() {
   return (
+    <UserProvider>
     <Routes>
       <Route path="/" element={<Home />} />
       <Route path="/carta" element={<Carta />} />
@@ -22,6 +24,7 @@ function App() {
       <Route path="/auth" element={<Auth />} />
       <Route path="/reset-password" element={<ResetPassword />} />  {/* ruta añadida */}
     </Routes>
+    </UserProvider>
   );
 }
 

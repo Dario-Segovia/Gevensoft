@@ -9,10 +9,16 @@ export function CartProvider({ children }) {
 
   const agregarAlCarrito = (producto) => {
     setCarrito((prev) => {
-      const existe = prev.find((item) => item.id_producto === producto.id_producto);
+      const existe = prev.find(
+        (item) =>
+          item.id_producto === producto.id_producto &&
+          item.variante?.id_variante === producto.variante?.id_variante
+      );
+
       if (existe) {
         return prev.map((item) =>
-          item.id_producto === producto.id_producto
+          item.id_producto === producto.id_producto &&
+          item.variante?.id_variante === producto.variante?.id_variante
             ? { ...item, cantidad: item.cantidad + 1 }
             : item
         );
@@ -22,12 +28,24 @@ export function CartProvider({ children }) {
     });
   };
 
-  const eliminarDelCarrito = (id_producto) => {
-    setCarrito((prev) => prev.filter((item) => item.id_producto !== id_producto));
+  const eliminarDelCarrito = (id_producto, id_variante) => {
+    setCarrito((prev) =>
+      prev.filter(
+        (item) =>
+          item.id_producto !== id_producto ||
+          item.variante?.id_variante !== id_variante
+      )
+    );
+  };
+
+  const limpiarCarrito = () => {
+    setCarrito([]);
   };
 
   return (
-    <CartContext.Provider value={{ carrito, agregarAlCarrito, eliminarDelCarrito }}>
+    <CartContext.Provider
+      value={{ carrito, agregarAlCarrito, eliminarDelCarrito, limpiarCarrito }}
+    >
       {children}
     </CartContext.Provider>
   );

@@ -5,6 +5,7 @@ const path = require("path");
 const productosRoutes = require("./routes/productosRoutes"); 
 const empresaRoute = require("./routes/empresaRoute");
 const authRoute = require("./routes/authRoute");
+const pedidosRoutes = require("./routes/pedidosRoutes");
 
 const app = express();
 
@@ -21,6 +22,7 @@ app.use('/IMG', express.static(path.join(__dirname, '../frontend/public/IMG')));
 app.use("/api", productosRoutes);
 app.use("/api", empresaRoute);
 app.use("/api", authRoute);
+app.use("/api", pedidosRoutes);
 
 // Puerto
 const PORT = process.env.PORT || 3000;
