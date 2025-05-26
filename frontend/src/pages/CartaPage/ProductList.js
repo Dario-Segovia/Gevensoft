@@ -108,56 +108,59 @@ const ProductList = ({ productos }) => {
               : null;
           const primeraImagen =
             primeraVariante?.imagenes?.[0]
-              ? `${baseURL}${primeraVariante.imagenes[0]}`
+              ? `${primeraVariante.imagenes[0]}`
               : `${baseURL}/IMG/default.jpg`;
 
           return (
             <div key={producto.id_producto} className="product-card">
+            <div className="product-image-container">
               <img
                 src={primeraImagen}
                 alt={producto.Nombre}
                 className="product-image"
                 onError={(e) => {
+                  console.error("Error loading image:", e);
                   e.target.onerror = null;
                   e.target.src = `${baseURL}/IMG/default.jpg`;
                 }}
               />
-
-              <div className="product-info">
-                <h3 className="product-name">{producto.Nombre}</h3>
-                <p className="product-description">{producto.DescipcionCorta}</p>
-                <p className="product-cost">
-                  {parseFloat(producto.Coste).toFixed(2)} €
-                </p>
-              </div>
-
-              <button
-                className="add-to-cart-button"
-                onClick={() => {
-                  if (producto.variantes && producto.variantes.length === 1) {
-                    agregarAlCarrito({
-                      id_item: producto.id_producto,
-                      tipo: "producto",
-                      nombre: producto.Nombre,
-                      descripcion: producto.DescipcionCorta,
-                      variante: producto.variantes[0],
-                    });
-                  } else if (producto.variantes && producto.variantes.length > 1) {
-                    setModalProducto(producto);
-                  } else {
-                    agregarAlCarrito({
-                      id_item: producto.id_producto,
-                      tipo: "producto",
-                      nombre: producto.Nombre,
-                      descripcion: producto.DescipcionCorta,
-                    });
-                  }
-                }}
-                title={t("common.agregar_al_carrito")}
-              >
-                <FaShoppingCart />
-              </button>
             </div>
+
+            <div className="product-info">
+              <h3 className="product-name">{producto.Nombre}</h3>
+              <p className="product-description">{producto.DescipcionCorta}</p>
+              <p className="product-cost">
+                {parseFloat(producto.Coste).toFixed(2)} €
+              </p>
+            </div>
+
+            <button
+              className="add-to-cart-button"
+              onClick={() => {
+                if (producto.variantes && producto.variantes.length === 1) {
+                  agregarAlCarrito({
+                    id_item: producto.id_producto,
+                    tipo: "producto",
+                    nombre: producto.Nombre,
+                    descripcion: producto.DescipcionCorta,
+                    variante: producto.variantes[0],
+                  });
+                } else if (producto.variantes && producto.variantes.length > 1) {
+                  setModalProducto(producto);
+                } else {
+                  agregarAlCarrito({
+                    id_item: producto.id_producto,
+                    tipo: "producto",
+                    nombre: producto.Nombre,
+                    descripcion: producto.DescipcionCorta,
+                  });
+                }
+              }}
+              title={t("common.agregar_al_carrito")}
+            >
+              <FaShoppingCart />
+            </button>
+          </div>
           );
         })}
       </div>

@@ -175,41 +175,11 @@
   margin-bottom: 10px;
 }
 
-@media (max-width: 768px) {
-  .main-content {
-    flex-direction: column;
-  }
-  
-  .sidebar {
-    width: 100%;
-    margin-right: 0;
-    margin-bottom: 20px;
-  }
-  
-  .product-list {
-    grid-template-columns: 1fr;
-    padding: 10px;
-  }
-  
-  .product-card {
-    min-height: 300px;
-  }
-  
-  .product-image-container {
-    height: 150px;
-  }
-  
-  .filters-container {
-    flex-direction: column;
-    gap: 15px;
-    padding: 10px;
-  }
-  
-  .search-bar {
-    width: 100%;
-  }
-  
-  .price-filter {
-    width: 100%;
-  }
+
+.product-list-container {
+  flex-grow: 1;          /* Para que crezca junto al sidebar */
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
+
