@@ -90,11 +90,11 @@ function Carrito() {
           {carrito.map((item) => (
             <div key={item.id_producto} className="carrito-item">
               <div className="info">
-                <h4>
-                  {item.variante?.Nombre
-                    ? `${item.Nombre}`
-                    : item.Nombre}
-                </h4>
+               <h4>
+  {item.variante?.Nombre
+    ? (item.nombre || item.Nombre)
+    : item.Nombre}
+</h4>
                 <p>Cantidad: {item.cantidad}</p>
                 <p>
                   Precio:{" "}
