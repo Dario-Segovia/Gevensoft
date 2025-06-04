@@ -3,14 +3,16 @@ const bcrypt = require("bcrypt");
 const crypto = require("crypto");
 const nodemailer = require("nodemailer");
 
-// Configura nodemailer con Gmail (usa app password, NO tu contraseña normal)
-const transporter = nodemailer.createTransport({
-  service: "gmail",
+const transporter = require("nodemailer").createTransport({
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false, // true para 465, false para 587
   auth: {
-    user: "",       // Cambia por tu email
-    pass: "",          // Cambia por tu app password
+    user: "",
+    pass: "", // sin espacios
   },
 });
+
 
 const registerUser = async (req, res) => {
   const {

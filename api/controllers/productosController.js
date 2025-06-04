@@ -52,14 +52,22 @@ const getProductos = async (req, res) => {
         p.DescipcionCorta, 
         p.DescripcionLarga, 
         p.Coste,
+
         v.id_variante,
         v.Nombre AS varianteNombre,
         v.Precio,
         (p.Coste + v.Precio) AS PrecioCalculado,
-        g.url_imagen
+        g.url_imagen,
+
+        op.id_opcion,
+        op.descripcion AS descripcion_opcion
+
       FROM producto p
       LEFT JOIN variante v ON p.id_producto = v.id_producto
       LEFT JOIN galeria g ON v.id_variante = g.id_variante
+      LEFT JOIN opciones_asociadas oa ON p.id_producto = oa.id_producto
+      LEFT JOIN opcion_producto op ON oa.id_opcion = op.id_opcion
+
       ORDER BY p.Nombre, v.id_variante
     `;
 
@@ -68,8 +76,6 @@ const getProductos = async (req, res) => {
     const productosMap = new Map();
 
     rows.forEach(row => {
-      if (!row.id_variante) return;
-
       if (!productosMap.has(row.id_producto)) {
         productosMap.set(row.id_producto, {
           id_producto: row.id_producto,
@@ -77,36 +83,49 @@ const getProductos = async (req, res) => {
           DescipcionCorta: row.DescipcionCorta,
           DescripcionLarga: row.DescripcionLarga,
           Coste: row.Coste,
-          variantes: new Map()
+          variantes: new Map(),
+          opciones: new Map()
         });
       }
 
       const producto = productosMap.get(row.id_producto);
 
-      if (!producto.variantes.has(row.id_variante)) {
+      // Procesar variantes
+      if (row.id_variante && !producto.variantes.has(row.id_variante)) {
         producto.variantes.set(row.id_variante, {
           id_variante: row.id_variante,
-          Nombre: row.varianteNombre,    // Aquí asignamos el nombre de la variante
+          Nombre: row.varianteNombre,
           Precio: row.Precio,
           PrecioCalculado: row.PrecioCalculado,
           imagenes: []
         });
       }
 
-      const variante = producto.variantes.get(row.id_variante);
+      if (row.url_imagen && row.id_variante) {
+        const variante = producto.variantes.get(row.id_variante);
+        if (!variante.imagenes.includes(row.url_imagen)) {
+          variante.imagenes.push(row.url_imagen);
+        }
+      }
 
-      if (row.url_imagen && !variante.imagenes.includes(row.url_imagen)) {
-        variante.imagenes.push(row.url_imagen);
+      // Procesar opciones asociadas
+      if (row.id_opcion && !producto.opciones.has(row.id_opcion)) {
+        producto.opciones.set(row.id_opcion, {
+          id_opcion: row.id_opcion,
+          descripcion: row.descripcion_opcion
+        });
       }
     });
 
+    // Convertir mapas a arrays
     const productos = Array.from(productosMap.values()).map(producto => ({
       id_producto: producto.id_producto,
       Nombre: producto.Nombre,
       DescipcionCorta: producto.DescipcionCorta,
       DescripcionLarga: producto.DescripcionLarga,
       Coste: producto.Coste,
-      variantes: Array.from(producto.variantes.values())
+      variantes: Array.from(producto.variantes.values()),
+      opciones: Array.from(producto.opciones.values())
     }));
 
     res.json(productos);

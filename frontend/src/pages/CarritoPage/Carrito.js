@@ -34,6 +34,7 @@ function Carrito() {
         precio_unitario: item.variante?.Precio || item.variante?.Coste || item.Coste,
         descuento: 0,
         notas: "",
+        opcion: item.opcion ? { ...item.opcion } : null, // <--- AÑADE ESTA LÍNEA
       }));
 
       const res = await fetch("http://localhost:3000/api/pedidos", {
@@ -87,36 +88,47 @@ function Carrito() {
         <p>El carrito está vacío.</p>
       ) : (
         <div className="carrito-lista">
-          {carrito.map((item) => (
-            <div key={item.id_producto} className="carrito-item">
-              <div className="info">
-               <h4>
-  {item.variante?.Nombre
-    ? (item.nombre || item.Nombre)
-    : item.Nombre}
-</h4>
-                <p>Cantidad: {item.cantidad}</p>
-                <p>
-                  Precio:{" "}
-                  {parseFloat(
-                    item.variante?.Precio || item.variante?.Coste || item.Coste
-                  ).toFixed(2)} €
-                </p>
-              </div>
-              <div className="subtotal">
-                Subtotal: {(
-                  (item.variante?.Precio || item.variante?.Coste || item.Coste) *
-                  item.cantidad
-                ).toFixed(2)} €
-                <button onClick={() =>
-  eliminarDelCarrito(item.id_producto, item.variante?.id_variante)
-}>
-  ❌
-</button>
+{carrito.map((item) => (
+  <div key={`${item.id_producto}-${item.variante?.id_variante}-${item.opcion?.id_opcion || ''}`} className="carrito-item">
+    <div className="info">
+      <h4>
+        {item.variante?.Nombre
+          ? item.variante?.Nombre
+          : item.Nombre}
+      </h4>
 
-              </div>
-            </div>
-          ))}
+      {/* NUEVO: Mostrar opción seleccionada si existe */}
+      {item.opcion && (
+        <p className="opcion-descripcion">
+          Opción: {item.opcion.descripcion}
+        </p>
+      )}
+
+      <p>Cantidad: {item.cantidad}</p>
+      <p>
+        Precio:{" "}
+        {parseFloat(
+          item.variante?.Precio || item.variante?.Coste || item.Coste
+        ).toFixed(2)} €
+      </p>
+    </div>
+
+    <div className="subtotal">
+      Subtotal: {(
+        (item.variante?.Precio || item.variante?.Coste || item.Coste) *
+        item.cantidad
+      ).toFixed(2)} €
+      <button
+        onClick={() =>
+          eliminarDelCarrito(item.id_producto, item.variante?.id_variante)
+        }
+      >
+        ❌
+      </button>
+    </div>
+  </div>
+))}
+
           <div className="carrito-total">
             <strong>Total: {total} €</strong>
           </div>

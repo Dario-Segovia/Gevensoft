@@ -54,7 +54,6 @@ const crearPedido = async (req, res) => {
     contenido // Array de items
   } = req.body;
 
-  // Valores por defecto
   estado = estado || "pendiente";
   metodo_pago = metodo_pago || "efectivo";
   notas = notas || null;
@@ -66,7 +65,6 @@ const crearPedido = async (req, res) => {
   const conn = await pool.getConnection();
 
   try {
-    // Si alguno de los datos de dirección está vacío, obtenerlos de la base de datos
     if (!direccion_envio || !codigo_postal_envio || !poblacion_envio || !provincia_envio || !pais_envio) {
       const [clienteRows] = await pool.query(
         "SELECT direccion, codigo_postal, poblacion, provincia, pais FROM cliente WHERE id_cliente = ?",
@@ -74,6 +72,7 @@ const crearPedido = async (req, res) => {
       );
 
       if (clienteRows.length === 0) {
+        conn.release();
         return res.status(404).json({ error: "Cliente no encontrado para completar dirección." });
       }
 
@@ -125,111 +124,119 @@ const crearPedido = async (req, res) => {
     }
 
     await conn.commit();
-    res.status(201).json({ id_pedido });
+    res.status(201).json({ id_pedido }); // RESPUESTA ÚNICA AQUÍ
 
-    // Envío de email
-    const [clienteRows] = await pool.query("SELECT email, nombre FROM cliente WHERE id_cliente = ?", [id_cliente]);
-    if (!clienteRows.length) {
-      console.error("Cliente no encontrado");
-      return;
-    }
-    const cliente = clienteRows[0];
+    // --- Lógica de correo en background ---
+    (async () => {
+      try {
+        const [clienteRows] = await pool.query("SELECT email, nombre FROM cliente WHERE id_cliente = ?", [id_cliente]);
+        if (!clienteRows.length) {
+          console.error("Cliente no encontrado para email");
+          return;
+        }
+        const cliente = clienteRows[0];
 
-    const rutaBaseImagenes = path.resolve(__dirname, "../../frontend/public");
-    console.log("Ruta base de imágenes:", rutaBaseImagenes);
+        const rutaBaseImagenes = path.resolve(__dirname, "../../frontend/public");
+        let html = `
+          <h1>Gracias por tu pedido, ${cliente.nombre}</h1>
+          <h2>Resumen de tu pedido #${id_pedido}</h2>
+          <div style="font-family: Arial, sans-serif; max-width: 600px;">
+        `;
 
-    let html = `
-      <h1>Gracias por tu pedido, ${cliente.nombre}</h1>
-      <h2>Resumen de tu pedido #${id_pedido}</h2>
-      <div style="font-family: Arial, sans-serif; max-width: 600px;">
-    `;
+        const attachments = [];
 
-    const attachments = [];
+        for (const [index, item] of contenido.entries()) {
+          const [[variante]] = await pool.query(
+            `SELECT v.Nombre, v.Precio, g.url_imagen
+             FROM variante v
+             LEFT JOIN galeria g ON v.id_variante = g.id_variante
+             WHERE v.id_variante = ? LIMIT 1`, [item.id_variante]
+          );
 
-    for (const [index, item] of contenido.entries()) {
-      const [[variante]] = await pool.query(
-        `SELECT v.Nombre, v.Precio, g.url_imagen
-         FROM variante v
-         LEFT JOIN galeria g ON v.id_variante = g.id_variante
-         WHERE v.id_variante = ? LIMIT 1`, [item.id_variante]
-      );
+          if (!variante) continue;
 
-      if (!variante) continue;
+          const nombreArchivo = variante.url_imagen ? path.basename(variante.url_imagen) : null;
+          let rutaImagenLocal = null;
 
-      const nombreArchivo = variante.url_imagen ? path.basename(variante.url_imagen) : null;
-      let rutaImagenLocal = null;
+          if (nombreArchivo) {
+            rutaImagenLocal = path.join(
+              rutaBaseImagenes,
+              "IMG",
+              item.id_variante.toString(),
+              nombreArchivo
+            );
+          }
 
-      if (nombreArchivo) {
-        rutaImagenLocal = path.join(
-          rutaBaseImagenes,
-          "IMG",
-          item.id_variante.toString(),
-          nombreArchivo
-        );
-      }
+          const opcionTexto = item.opcion?.descripcion
+            ? `<p><strong>Opción:</strong> ${item.opcion.descripcion}</p>`
+            : "";
 
-      console.log("Buscando imagen en:", rutaImagenLocal);
+          if (rutaImagenLocal && fs.existsSync(rutaImagenLocal)) {
+            const cid = `imagen_${id_pedido}_${index}@gevensoft`;
 
-      if (rutaImagenLocal && fs.existsSync(rutaImagenLocal)) {
-        const cid = `imagen_${id_pedido}_${index}@gevensoft`;
+            attachments.push({
+              filename: nombreArchivo,
+              path: rutaImagenLocal,
+              cid: cid,
+              contentDisposition: "inline"
+            });
 
-        attachments.push({
-          filename: nombreArchivo,
-          path: rutaImagenLocal,
-          cid: cid,
-          contentDisposition: "inline"
-        });
+            html += `
+              <div style="margin: 20px 0; padding: 15px; border: 1px solid #eee; border-radius: 5px; display: flex;">
+                <img src="cid:${cid}" alt="${variante.Nombre}" style="max-width: 100px; max-height: 100px; margin-right: 15px;"/>
+                <div>
+                  <h3 style="margin-top: 0;">${variante.Nombre}</h3>
+                  ${opcionTexto}
+                  <p>Precio unitario: ${item.precio_unitario} €</p>
+                  <p>Cantidad: ${item.cantidad}</p>
+                  <p>Subtotal: ${(item.precio_unitario * item.cantidad).toFixed(2)} €</p>
+                </div>
+              </div>
+            `;
+          } else {
+            html += `
+              <div style="margin: 20px 0; padding: 15px; border: 1px solid #eee; border-radius: 5px;">
+                <h3 style="margin-top: 0;">${variante.Nombre}</h3>
+                ${opcionTexto}
+                <p>Precio unitario: ${item.precio_unitario} €</p>
+                <p>Cantidad: ${item.cantidad}</p>
+                <p>Subtotal: ${(item.precio_unitario * item.cantidad).toFixed(2)} €</p>
+              </div>
+            `;
+          }
+        }
 
         html += `
-          <div style="margin: 20px 0; padding: 15px; border: 1px solid #eee; border-radius: 5px; display: flex;">
-            <img src="cid:${cid}" alt="${variante.Nombre}" style="max-width: 100px; max-height: 100px; margin-right: 15px;"/>
-            <div>
-              <h3 style="margin-top: 0;">${variante.Nombre}</h3>
-              <p>Precio unitario: ${item.precio_unitario} €</p>
-              <p>Cantidad: ${item.cantidad}</p>
-              <p>Subtotal: ${(item.precio_unitario * item.cantidad).toFixed(2)} €</p>
+            <div style="margin-top: 20px; font-size: 1.2em;">
+              <strong>Total del pedido: ${total} €</strong>
             </div>
           </div>
+          <p style="margin-top: 30px; color: #666;">
+            Gracias por confiar en nosotros. Tu pedido está siendo procesado.
+          </p>
         `;
-      } else {
-        html += `
-          <div style="margin: 20px 0; padding: 15px; border: 1px solid #eee; border-radius: 5px;">
-            <h3 style="margin-top: 0;">${variante.Nombre}</h3>
-            <p>Precio unitario: ${item.precio_unitario} €</p>
-            <p>Cantidad: ${item.cantidad}</p>
-            <p>Subtotal: ${(item.precio_unitario * item.cantidad).toFixed(2)} €</p>
-          </div>
-        `;
+
+        const transporter = nodemailer.createTransport({
+          service: "gmail",
+          auth: {
+            user: "",
+            pass: "",
+          },
+        });
+
+        const info = await transporter.sendMail({
+          from: '"Gevensoft" <dario010904@gmail.com>',
+          to: cliente.email,
+          subject: `Confirmación de pedido #${id_pedido}`,
+          html: html,
+          attachments: attachments
+        });
+
+        console.log("Correo enviado:", info.messageId);
+      } catch (emailErr) {
+        console.error("Error al enviar correo:", emailErr);
       }
-    }
-
-    html += `
-        <div style="margin-top: 20px; font-size: 1.2em;">
-          <strong>Total del pedido: ${total} €</strong>
-        </div>
-      </div>
-      <p style="margin-top: 30px; color: #666;">
-        Gracias por confiar en nosotros. Tu pedido está siendo procesado.
-      </p>
-    `;
-
-    const transporter = nodemailer.createTransport({
-      service: "gmail",
-      auth: {
-        user: "dario010904@gmail.com",
-        pass: "wzlg aeal dvnn acdz",
-      },
-    });
-
-    const info = await transporter.sendMail({
-      from: '"Gevensoft" <dario010904@gmail.com>',
-      to: cliente.email,
-      subject: `Confirmación de pedido #${id_pedido}`,
-      html: html,
-      attachments: attachments
-    });
-
-    console.log("Correo enviado:", info.messageId);
+    })();
 
   } catch (err) {
     await conn.rollback();
@@ -239,7 +246,6 @@ const crearPedido = async (req, res) => {
     conn.release();
   }
 };
-
 
 module.exports = {
   getPedidos,

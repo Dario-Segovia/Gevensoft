@@ -12,13 +12,15 @@ export function CartProvider({ children }) {
       const existe = prev.find(
         (item) =>
           item.id_producto === producto.id_producto &&
-          item.variante?.id_variante === producto.variante?.id_variante
+          item.variante?.id_variante === producto.variante?.id_variante &&
+          item.opcion?.id_opcion === producto.opcion?.id_opcion
       );
 
       if (existe) {
         return prev.map((item) =>
           item.id_producto === producto.id_producto &&
-          item.variante?.id_variante === producto.variante?.id_variante
+          item.variante?.id_variante === producto.variante?.id_variante &&
+          item.opcion?.id_opcion === producto.opcion?.id_opcion
             ? { ...item, cantidad: item.cantidad + 1 }
             : item
         );
@@ -28,12 +30,13 @@ export function CartProvider({ children }) {
     });
   };
 
-  const eliminarDelCarrito = (id_producto, id_variante) => {
+  const eliminarDelCarrito = (id_producto, id_variante, id_opcion) => {
     setCarrito((prev) =>
       prev.filter(
         (item) =>
           item.id_producto !== id_producto ||
-          item.variante?.id_variante !== id_variante
+          item.variante?.id_variante !== id_variante ||
+          item.opcion?.id_opcion !== id_opcion
       )
     );
   };
@@ -50,3 +53,4 @@ export function CartProvider({ children }) {
     </CartContext.Provider>
   );
 }
+

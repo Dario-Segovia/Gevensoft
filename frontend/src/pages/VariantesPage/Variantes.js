@@ -4,7 +4,6 @@ import "./Variantes.css";
 const baseURL = "http://localhost:3000";
 
 const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
-  // Los hooks siempre van primero
   const [indiceVariante, setIndiceVariante] = useState(() => {
     if (producto && varianteSeleccionada) {
       const idx = producto.variantes.findIndex(
@@ -15,7 +14,11 @@ const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
     return 0;
   });
 
-  // Ahora sí, puedes retornar null si no hay producto
+  // NUEVO: Estado para opción seleccionada
+  const [opcionSeleccionada, setOpcionSeleccionada] = useState(
+    producto.opciones?.[0] || null
+  );
+
   if (!producto) return null;
 
   const varianteActual = producto.variantes[indiceVariante];
@@ -24,7 +27,6 @@ const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
     varianteActual.Precio || varianteActual.Coste || varianteActual.cost || 0
   );
 
-  // Imagen principal
   const imagenPrincipal =
     varianteActual.imagenes && varianteActual.imagenes.length > 0
       ? `${baseURL}${varianteActual.imagenes[0]}`
@@ -37,6 +39,7 @@ const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
           ×
         </button>
         <h2>{producto.Nombre}</h2>
+
         {/* Selector de variantes */}
         <div className="variante-selector">
           {producto.variantes.map((v, idx) => (
@@ -51,6 +54,29 @@ const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
             </button>
           ))}
         </div>
+
+        {/* Selector de opciones asociadas (nuevo) */}
+        {producto.opciones?.length > 0 && (
+          <div className="opcion-selector">
+            <h4>Selecciona una opción:</h4>
+            <select
+              value={opcionSeleccionada?.id_opcion || ""}
+              onChange={(e) => {
+                const selected = producto.opciones.find(
+                  (opt) => String(opt.id_opcion) === e.target.value
+                );
+                setOpcionSeleccionada(selected || null);
+              }}
+            >
+              {producto.opciones.map((opt) => (
+                <option key={opt.id_opcion} value={opt.id_opcion}>
+                  {opt.descripcion}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
         {/* Detalles de la variante */}
         <div className="variante-detalles">
           <img
@@ -72,16 +98,18 @@ const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
             )}
           </div>
         </div>
+
         <button
           className="add-main-variant"
           onClick={() => {
             onAgregar({
               ...producto,
               variante: varianteActual,
+              opcion: opcionSeleccionada, // <-- AÑADIDO
               id_item: producto.id_producto,
-              tipo: "producto",
+              tipo: "producto"
             });
-            onClose(); // Cierra el modal después de añadir
+            onClose();
           }}
         >
           Añadir esta variante al carrito
