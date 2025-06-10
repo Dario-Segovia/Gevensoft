@@ -1,3 +1,4 @@
+/* ---------- ESTRUCTURA PRINCIPAL ---------- */
 .header {
   background-color: #f8f9fa;
   padding: 1rem 2rem;
@@ -5,47 +6,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  gap: 1rem;
   position: sticky;
   top: 0;
   z-index: 100;
 }
 
-.header h1 {
-  font-size: 1.5rem;
-  margin: 0;
-  color: #333;
-}
-
-.nav {
-  display: flex;
-}
-
-.nav-list {
-  display: flex;
-  gap: 1rem;
-  list-style: none;
-  margin: 0;
-  padding: 0;
-}
-
-.nav-button {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 0.375rem;
-  text-decoration: none;
-  font-size: 1rem;
-  cursor: pointer;
-  transition: background-color 0.3s, transform 0.2s;
-}
-
-.nav-button:hover {
-  
-  transform: translateY(-1px);
-}
-/* Nuevos estilos para el logo */
+/* ---------- BRANDING ---------- */
 .header-branding {
   display: flex;
   align-items: center;
@@ -56,24 +24,59 @@
   max-width: 50px;
   height: auto;
   border-radius: 4px;
-  margin-right: 0.5rem;
 }
 
-/* Ajuste para mantener la alineación original */
-.header h1 {
+.header-title {
+  font-size: 1.5rem;
   margin: 0;
+  color: #333;
   white-space: nowrap;
 }
 
-/* Mejora hover para coincidir con tu estilo existente */
+/* ---------- NAVEGACIÓN PRINCIPAL ---------- */
+.nav {
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.nav-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 0.375rem;
+  text-decoration: none;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  touch-action: manipulation;
+}
+
 .nav-button:hover {
   background-color: #3498db;
   color: white;
   transform: translateY(-1px);
 }
 
-/* Estilos para el icono del carrito */
+/* ---------- ELEMENTOS DERECHA (IDIOMA, CARRITO, USUARIO) ---------- */
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-left: auto;
+}
+
+.language-switcher-container {
+  display: flex;
+  align-items: center;
+}
+
+/* ---------- CARRITO ---------- */
 .nav-icon {
+  position: relative;
   padding: 0.5rem;
   display: flex;
   align-items: center;
@@ -85,11 +88,6 @@
 
 .nav-icon:hover svg {
   color: white;
-}
-
-/* Badge del carrito */
-.nav-icon {
-  position: relative;
 }
 
 .cart-badge {
@@ -107,69 +105,49 @@
   line-height: 1.2;
 }
 
-.header {
-  background-color: #f8f9fa;
-  padding: 1rem;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  display: flex;
-  flex-wrap: wrap;
-  gap: 1rem;
-  justify-content: space-between;
-  align-items: center;
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
+/* ---------- RESPONSIVE DESIGN ---------- */
 
-/* Mobile First */
+/* Mobile */
 @media (max-width: 768px) {
   .header {
     padding: 0.5rem;
-    position: relative;
   }
 
   .header-branding {
-    order: 1;
     flex: 1 1 100%;
     justify-content: center;
     padding: 0.5rem 0;
+    text-align: center;
+    flex-direction: column;
+  }
+
+  .header-logo {
+    max-width: 40px;
+    margin-bottom: 0.3rem;
+  }
+
+  .header-title {
+    font-size: 1.2rem;
   }
 
   .nav {
-    order: 3;
     flex: 1 1 100%;
     justify-content: center;
-    flex-wrap: wrap;
     gap: 0.5rem;
     padding: 0.5rem 0;
     border-top: 1px solid #ddd;
-  }
-
-  .language-switcher-container {
-    order: 2;
-    flex: 1 1 auto;
-    justify-content: center;
-    padding: 0.5rem 0;
   }
 
   .nav-button {
     font-size: 0.9rem;
     padding: 0.5rem;
     flex: 1 1 45%;
-    text-align: center;
-    justify-content: center;
   }
 
-  .header-logo {
-    max-width: 40px;
-  }
-
-  .header-title {
-    font-size: 1.2rem !important;
-  }
-
-  .nav-user {
-    display: none;
+  .header-right {
+    flex-direction: column;
+    align-items: flex-end;
+    width: 100%;
   }
 
   .cart-badge {
@@ -177,6 +155,10 @@
     right: -5px;
     padding: 2px 6px;
     font-size: 0.6rem;
+  }
+
+  .nav-user {
+    display: none;
   }
 }
 
@@ -186,17 +168,17 @@
     padding: 0.8rem;
   }
 
-  .nav-button {
-    padding: 0.5rem 0.8rem;
-    font-size: 0.9rem;
-  }
-
   .header-logo {
     max-width: 45px;
   }
 
   .header-title {
-    font-size: 1.3rem !important;
+    font-size: 1.3rem;
+  }
+
+  .nav-button {
+    padding: 0.5rem 0.8rem;
+    font-size: 0.9rem;
   }
 }
 
@@ -205,27 +187,4 @@
   .nav {
     gap: 1.5rem;
   }
-}
-
-/* Estilos específicos para cuando el menú colapsa */
-@media (max-width: 480px) {
-  .nav-button {
-    flex: 1 1 100%;
-    font-size: 0.8rem;
-  }
-
-  .header-branding {
-    flex-direction: column;
-    text-align: center;
-  }
-
-  .header-logo {
-    margin-right: 0;
-    margin-bottom: 0.3rem;
-  }
-}
-
-/* Mejora de accesibilidad para móviles */
-.nav-button {
-  touch-action: manipulation;
 }

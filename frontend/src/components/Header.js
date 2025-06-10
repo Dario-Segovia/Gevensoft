@@ -44,59 +44,46 @@ function Header() {
   if (error) return <div className="header-error">Error: {error}</div>;
 
   return (
-    <header className="header">
-      <div className="header-branding">
-        {empresaData?.logo && (
-          <Link to="/"> {/* Envolvemos el logo con el Link */}
-          <img 
-  src={logoLocal}
-  alt="Logo del restaurante" 
-  className="header-logo"
-/>
+<header className="header">
+  <div className="header-branding">
+    {empresaData?.logo && (
+      <Link to="/">
+        <img src={logoLocal} alt="Logo del restaurante" className="header-logo" />
+      </Link>
+    )}
+    <h1 className="header-title">{empresaData?.nombre || 'Mi Restaurante'}</h1>
+  </div>
 
-          </Link>
-        )}
-        <h1 className="header-title">{empresaData?.nombre || 'Mi Restaurante'}</h1>
-      </div>
+  <nav className="nav">
+    <Link to="/" className="nav-button">Home</Link>
+    <Link to="/carta" className="nav-button">{t("header.productos")}</Link>
+    <Link to="/nosotros" className="nav-button">{t("header.sobreNosotros")}</Link>
+    <Link to="/contacto" className="nav-button">{t("header.contacto")}</Link>
+  </nav>
 
-      <nav className="nav">
-        <Link to="/" className="nav-button">
-          Home
-        </Link>
-        <Link to="/carta" className="nav-button">
-        {t("header.productos")}
-        </Link>
-        <Link to="/nosotros" className="nav-button">
-        {t("header.sobreNosotros")}
-        </Link>
-        <Link to="/contacto" className="nav-button">
-        {t("header.contacto")}
-        </Link>
-        <Link to="/carrito" className="nav-button nav-icon" aria-label="Carrito">
-          <FaShoppingCart style={{ fontSize: '1.5rem' }} />
-          {totalItems > 0 && (
-            <span className="cart-badge">{totalItems}</span>
-          )}
-        </Link>
-        {user ? (
-          <>
-            <span className="nav-user">Hola, {user.nombre}</span>
-            <button onClick={() => { localStorage.removeItem('user'); setUser(null); }}>
-              Cerrar sesión
-            </button>
-          </>
-        ) : (
-          <Link to="/auth" className="nav-button">
-            {t("header.iniciarSesion")}
-          </Link>
-        )}
-      </nav>
+  <div className="header-right">
+    <div className="language-switcher-container">
+      <LanguageSwitcher />
+    </div>
 
-      {/* Agrega el LanguageSwitcher donde quieras en el header */}
-      <div className="language-switcher-container">
-        <LanguageSwitcher />
-      </div>
-    </header>
+    <Link to="/carrito" className="nav-button nav-icon" aria-label="Carrito">
+      <FaShoppingCart style={{ fontSize: '1.5rem' }} />
+      {totalItems > 0 && <span className="cart-badge">{totalItems}</span>}
+    </Link>
+
+    {user ? (
+      <>
+        <span className="nav-user">Hola, {user.nombre}</span>
+        <button onClick={() => { localStorage.removeItem('user'); setUser(null); }}>
+          Cerrar sesión
+        </button>
+      </>
+    ) : (
+      <Link to="/auth" className="nav-button">{t("header.iniciarSesion")}</Link>
+    )}
+  </div>
+</header>
+
   );
 }
 
