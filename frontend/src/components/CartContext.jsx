@@ -7,39 +7,40 @@ export const useCart = () => useContext(CartContext);
 export function CartProvider({ children }) {
   const [carrito, setCarrito] = useState([]);
 
-  const agregarAlCarrito = (producto) => {
+  function agregarAlCarrito(item) {
     setCarrito((prev) => {
-      const existe = prev.find(
-        (item) =>
-          item.id_producto === producto.id_producto &&
-          item.variante?.id_variante === producto.variante?.id_variante &&
-          item.opcion?.id_opcion === producto.opcion?.id_opcion
+      // Busca si ya existe el mismo producto/variante/opción
+      const idx = prev.findIndex(
+        (i) =>
+          i.id_producto === item.id_producto &&
+          i.variante?.id_variante === item.variante?.id_variante &&
+          ((i.opcion?.id_opcion || null) === (item.opcion?.id_opcion || null))
       );
-
-      if (existe) {
-        return prev.map((item) =>
-          item.id_producto === producto.id_producto &&
-          item.variante?.id_variante === producto.variante?.id_variante &&
-          item.opcion?.id_opcion === producto.opcion?.id_opcion
-            ? { ...item, cantidad: item.cantidad + 1 }
-            : item
-        );
+      if (idx >= 0) {
+        // Si existe, suma la cantidad
+        const nuevo = [...prev];
+        nuevo[idx] = {
+          ...nuevo[idx],
+          cantidad: nuevo[idx].cantidad + item.cantidad,
+        };
+        return nuevo;
       } else {
-        return [...prev, { ...producto, cantidad: 1 }];
+        // Si no existe, lo añade
+        return [...prev, item];
       }
     });
-  };
+  }
 
-  const eliminarDelCarrito = (id_producto, id_variante, id_opcion) => {
+  function eliminarDelCarrito(id_producto, id_variante, id_opcion) {
     setCarrito((prev) =>
       prev.filter(
         (item) =>
           item.id_producto !== id_producto ||
           item.variante?.id_variante !== id_variante ||
-          item.opcion?.id_opcion !== id_opcion
+          (item.opcion?.id_opcion || null) !== (id_opcion || null)
       )
     );
-  };
+  }
 
   const limpiarCarrito = () => {
     setCarrito([]);

@@ -120,7 +120,11 @@ function Carrito() {
       ).toFixed(2)} €
       <button
         onClick={() =>
-          eliminarDelCarrito(item.id_producto, item.variante?.id_variante)
+          eliminarDelCarrito(
+            item.id_producto,
+            item.variante?.id_variante,
+            item.opcion?.id_opcion // <-- Añade esto
+          )
         }
       >
         ❌

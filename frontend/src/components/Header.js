@@ -6,7 +6,7 @@ import LanguageSwitcher from '../LanguageSwitcher';  // Asegúrate de importar e
 import "./Header.css";
 import { useTranslation } from "react-i18next"; // Importa el hook para traducción
 import logoLocal from '../assets/logo.jpg';
-
+import SideCart from "./SideCart";
 
 function Header() {
   const { t } = useTranslation();
@@ -15,6 +15,7 @@ function Header() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [user, setUser] = useState(null);
+  const [sideCartOpen, setSideCartOpen] = useState(false);
 
   // Calcular total de items
   const totalItems = carrito.reduce((total, item) => total + item.cantidad, 0);
@@ -44,59 +45,68 @@ function Header() {
   if (error) return <div className="header-error">Error: {error}</div>;
 
   return (
-    <header className="header">
-      <div className="header-branding">
-        {empresaData?.logo && (
-          <Link to="/"> {/* Envolvemos el logo con el Link */}
-          <img 
-  src={logoLocal}
-  alt="Logo del restaurante" 
-  className="header-logo"
+    <>
+      <header className="header">
+        <div className="header-branding">
+          {empresaData?.logo && (
+            <Link to="/"> {/* Envolvemos el logo con el Link */}
+            <img 
+src={logoLocal}
+alt="Logo del restaurante" 
+className="header-logo"
 />
 
-          </Link>
-        )}
-        <h1 className="header-title">{empresaData?.nombre || 'Mi Restaurante'}</h1>
-      </div>
-
-      <nav className="nav">
-        <Link to="/" className="nav-button">
-          Home
-        </Link>
-        <Link to="/carta" className="nav-button">
-        {t("header.productos")}
-        </Link>
-        <Link to="/nosotros" className="nav-button">
-        {t("header.sobreNosotros")}
-        </Link>
-        <Link to="/contacto" className="nav-button">
-        {t("header.contacto")}
-        </Link>
-        <Link to="/carrito" className="nav-button nav-icon" aria-label="Carrito">
-          <FaShoppingCart style={{ fontSize: '1.5rem' }} />
-          {totalItems > 0 && (
-            <span className="cart-badge">{totalItems}</span>
+            </Link>
           )}
-        </Link>
-        {user ? (
-          <>
-            <span className="nav-user">Hola, {user.nombre}</span>
-            <button onClick={() => { localStorage.removeItem('user'); setUser(null); }}>
-              Cerrar sesión
-            </button>
-          </>
-        ) : (
-          <Link to="/auth" className="nav-button">
-            {t("header.iniciarSesion")}
-          </Link>
-        )}
-      </nav>
+          <h1 className="header-title">{empresaData?.nombre || 'Mi Restaurante'}</h1>
+        </div>
 
-      {/* Agrega el LanguageSwitcher donde quieras en el header */}
-      <div className="language-switcher-container">
-        <LanguageSwitcher />
-      </div>
-    </header>
+        <nav className="nav">
+          <Link to="/" className="nav-button">
+            Home
+          </Link>
+          <Link to="/carta" className="nav-button">
+          {t("header.productos")}
+          </Link>
+          <Link to="/nosotros" className="nav-button">
+          {t("header.sobreNosotros")}
+          </Link>
+          <Link to="/contacto" className="nav-button">
+          {t("header.contacto")}
+          </Link>
+       
+          {user ? (
+            <>
+              <span className="nav-user">Hola, {user.nombre}</span>
+              <button onClick={() => { localStorage.removeItem('user'); setUser(null); }}>
+                Cerrar sesión
+              </button>
+            </>
+          ) : (
+            <Link to="/auth" className="nav-button">
+              {t("header.iniciarSesion")}
+            </Link>
+          )}
+        </nav>
+
+        {/* Agrega el LanguageSwitcher donde quieras en el header */}
+        <div className="language-switcher-container">
+          <LanguageSwitcher />
+        </div>
+         <button
+  className="nav-button nav-icon"
+  aria-label="Carrito"
+  style={{ background: "none", border: "none", position: "relative" }}
+  onClick={() => setSideCartOpen(open => !open)} // Cambia aquí
+>
+  <FaShoppingCart style={{ fontSize: '1.5rem' }} />
+  {totalItems > 0 && (
+    <span className="cart-badge">{totalItems}</span>
+  )}
+</button>
+      </header>
+      <SideCart open={sideCartOpen} onClose={() => setSideCartOpen(false)} />
+    </>
   );
 }
 

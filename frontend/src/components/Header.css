@@ -7,7 +7,9 @@
   align-items: center;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 2100;
+  height: 70px;
+  min-height: 70px;
 }
 
 .header h1 {
@@ -68,24 +70,17 @@
 /* Mejora hover para coincidir con tu estilo existente */
 .nav-button:hover {
   background-color: #3498db;
-  color: white;
+  
   transform: translateY(-1px);
 }
 
-/* Estilos para el icono del carrito */
-.nav-icon {
-  padding: 0.5rem;
-  display: flex;
-  align-items: center;
-}
+
 
 .nav-icon svg {
   transition: color 0.3s;
 }
 
-.nav-icon:hover svg {
-  color: white;
-}
+
 
 /* Badge del carrito */
 .nav-icon {
@@ -118,7 +113,9 @@
   align-items: center;
   position: sticky;
   top: 0;
-  z-index: 100;
+  z-index: 2100;
+  height: 70px;
+  min-height: 70px;
 }
 
 /* Mobile First */

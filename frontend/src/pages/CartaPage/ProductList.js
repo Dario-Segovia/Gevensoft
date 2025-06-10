@@ -139,20 +139,26 @@ const ProductList = ({ productos }) => {
               onClick={() => {
                 if (producto.variantes && producto.variantes.length === 1) {
                   agregarAlCarrito({
+                    id_producto: producto.id_producto,
                     id_item: producto.id_producto,
                     tipo: "producto",
-                    nombre: producto.Nombre,
+                    Nombre: producto.Nombre,
                     descripcion: producto.DescipcionCorta,
                     variante: producto.variantes[0],
+                    cantidad: 1,
+                    Coste: parseFloat(producto.variantes[0].Precio ?? producto.variantes[0].Coste ?? producto.Coste ?? 0)
                   });
                 } else if (producto.variantes && producto.variantes.length > 1) {
                   setModalProducto(producto);
                 } else {
                   agregarAlCarrito({
+                    id_producto: producto.id_producto,
                     id_item: producto.id_producto,
                     tipo: "producto",
-                    nombre: producto.Nombre,
+                    Nombre: producto.Nombre,
                     descripcion: producto.DescipcionCorta,
+                    cantidad: 1,
+                    Coste: parseFloat(producto.Coste ?? 0)
                   });
                 }
               }}
