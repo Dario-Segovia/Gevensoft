@@ -103,12 +103,15 @@
 
 
   "header": {
-      "home": "Home",
-      "productos": "Productos",
-      "sobreNosotros": "Sobre nosotros",
-      "contacto": "Contacto",
-      "carrito": "Carta",
-      "iniciarSesion": "Iniciar sesión"
-    }
+    "home": "Home",
+    "productos": "Products",
+    "sobreNosotros": "About Us",
+    "contacto": "Contact",
+    "carrito": "Cart",
+    "iniciarSesion": "Login",
+    "slogan": "Mas peruanos que nunca"
+  }
+
+ 
    
 }

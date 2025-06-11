@@ -101,14 +101,16 @@
     "categorias": "Categories"
   },
   
-  "header": {
-      "home": "Home",
-      "productos": "Products",
-      "sobreNosotros": "About Us",
-      "contacto": "Contact",
-      "carrito": "Cart",
-      "iniciarSesion": "Login"
-    }
+ "header": {
+    "home": "Home",
+    "productos": "Products",
+    "sobreNosotros": "About Us",
+    "contacto": "Contact",
+    "carrito": "Cart",
+    "iniciarSesion": "Login",
+    "slogan": "More peruvian than ever"
+  }
+
     
   
 

@@ -42,13 +42,25 @@ export function CartProvider({ children }) {
     );
   }
 
+  function actualizarCantidad(id_producto, id_variante, id_opcion, nuevaCantidad) {
+    setCarrito((prev) =>
+      prev.map((item) =>
+        item.id_producto === id_producto &&
+        item.variante?.id_variante === id_variante &&
+        ((item.opcion?.id_opcion || null) === (id_opcion || null))
+          ? { ...item, cantidad: nuevaCantidad }
+          : item
+      )
+    );
+  }
+
   const limpiarCarrito = () => {
     setCarrito([]);
   };
 
   return (
     <CartContext.Provider
-      value={{ carrito, agregarAlCarrito, eliminarDelCarrito, limpiarCarrito }}
+      value={{ carrito, agregarAlCarrito, eliminarDelCarrito, limpiarCarrito, actualizarCantidad }}
     >
       {children}
     </CartContext.Provider>
