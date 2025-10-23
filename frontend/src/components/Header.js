@@ -61,7 +61,8 @@ function Header() {
       }
       
       const data = await response.json();
-      setEmpresaData(Array.isArray(data) ? data[0] : data);
+      const empresa = Array.isArray(data) ? data[0] : data;
+      setEmpresaData(empresa);
     } catch (err) {
       console.error('Error fetching empresa data:', err);
       setError(t("header.dataError"));
@@ -98,6 +99,19 @@ function Header() {
     return () => window.removeEventListener('storage', checkUser);
   }, []);
 
+  // Función para construir la URL del logo
+  const getLogoUrl = () => {
+    if (!empresaData?.logo) return logoLocal;
+    
+    // Si el logo ya es una URL completa
+    if (empresaData.logo.startsWith('http')) {
+      return empresaData.logo;
+    }
+    
+    // Si es una ruta relativa, construir la URL completa
+    return `http://localhost:3000${empresaData.logo.startsWith('/') ? '' : '/'}${empresaData.logo}`;
+  };
+
   const handleLogout = () => {
     localStorage.removeItem('user');
     setUser(null);
@@ -125,11 +139,15 @@ function Header() {
         <div className="header-branding">
           <Link to="/" className="logo-link" aria-label={t("header.home")}>
             <img 
-              src={logoLocal}
+              src={getLogoUrl()}
               alt={t("header.logoAlt")} 
               className="header-logo"
               width="50"
               height="50"
+              onError={(e) => {
+                // Fallback a logo local si hay error al cargar el logo de la API
+                e.target.src = logoLocal;
+              }}
             />
             <h1 className="header-title">
               {empresaData?.nombre || 'Mi Restaurante'}
