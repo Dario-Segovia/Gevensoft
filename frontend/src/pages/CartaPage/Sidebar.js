@@ -4,6 +4,9 @@ import "./Sidebar.css";
 
 // Función para verificar si la imagen existe
 const checkImageExists = async (url) => {
+  // Si no hay URL, retornamos false inmediatamente
+  if (!url) return false;
+  
   return new Promise((resolve) => {
     const image = new Image();
     image.onload = () => resolve(true);
@@ -16,14 +19,15 @@ const buildCategoryTree = (categories) => {
   const categoryMap = {};
   const rootCategories = [];
   
-  // Crear mapa de categorías
+  // Crear mapa de categorías - USAMOS LA URL DE LA API DIRECTAMENTE
   categories.forEach(category => {
     categoryMap[category.id_categoria] = { 
       ...category, 
       children: [],
       isExpanded: false,
-      // Generamos la URL del icono basado en el ID
-      Url_icono: `/categorias/${category.id_categoria}.jpg` // o .png según tu formato
+      // Usamos la URL del icono que viene de la API
+      // Asegúrate de que el nombre de la propiedad coincida con tu API
+      Url_icono: category.Url_icono || category.icono || category.icon_url || null
     };
   });
   
@@ -49,12 +53,24 @@ const CategoryItem = ({ category, onClickCategoria, isParent, t }) => {
   // Verificar si la imagen existe al montar el componente
   useEffect(() => {
     const verifyImage = async () => {
-      const exists = await checkImageExists(category.Url_icono);
-      setIconUrl(exists ? category.Url_icono : '/categorias/default.jpg');
+      // Primero verificamos si la imagen de la API existe
+      if (category.Url_icono) {
+        const exists = await checkImageExists(category.Url_icono);
+        if (exists) {
+          setIconUrl(category.Url_icono);
+          return;
+        }
+      }
+      
+      // Si no existe la imagen de la API, intentamos con la ruta local basada en ID
+      const localIconUrl = `/categorias/${category.id_categoria}.jpg`;
+      const localExists = await checkImageExists(localIconUrl);
+      
+      setIconUrl(localExists ? localIconUrl : '/categorias/default.jpg');
     };
     
     verifyImage();
-  }, [category.Url_icono]);
+  }, [category.Url_icono, category.id_categoria]);
 
   const handleToggle = (e) => {
     e.stopPropagation();
@@ -62,12 +78,19 @@ const CategoryItem = ({ category, onClickCategoria, isParent, t }) => {
       setIsExpanded(!isExpanded);
     }
   };
+
+  const handleCategoryClick = () => {
+    if (!isParent) {
+      onClickCategoria(category.id_categoria);
+    }
+  };
   
   return (
     <li className={`sidebar-item ${isParent ? 'parent' : ''}`}>
       <div 
         className="category-content" 
-        onClick={() => !isParent && onClickCategoria(category.id_categoria)}
+        onClick={handleCategoryClick}
+        style={{ cursor: isParent ? 'default' : 'pointer' }}
       >
         <img 
           src={iconUrl} 
@@ -116,7 +139,7 @@ const Sidebar = ({ categorias, onClickCategoria }) => {
   const { t } = useTranslation();
   const [categoryTree, setCategoryTree] = useState([]);
 
-  // Construir el árbol de categorías y verificar imágenes
+  // Construir el árbol de categorías
   useEffect(() => {
     if (categorias && categorias.length > 0) {
       setCategoryTree(buildCategoryTree(categorias));
