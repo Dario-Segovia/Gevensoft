@@ -151,7 +151,7 @@ function Header() {
             />
             <h1 className="header-title">
               {empresaData?.nombre || 'Mi Restaurante'}
-              <span className="header-subtitle">{t("header.slogan")}</span>
+              <span className="header-subtitle">{empresaData?.texto_footer || t("header.slogan")}</span>
             </h1>
           </Link>
         </div>
