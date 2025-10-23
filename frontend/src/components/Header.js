@@ -206,6 +206,9 @@ function Header() {
         </div>
       </header>
       
+      {/* ESPACIO RESERVADO - SOLUCIÓN A LA SUPERPOSICIÓN */}
+      <div className="header-spacer"></div>
+      
       <SideCart 
         open={sideCartOpen} 
         onClose={() => setSideCartOpen(false)} 

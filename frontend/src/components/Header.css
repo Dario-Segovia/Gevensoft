@@ -236,7 +236,7 @@
 }
 
 .auth-button:hover {
-  background-color: darken(var(--secondary-color), 10%);
+  background-color: #2980b9;
   transform: translateY(-2px);
 }
 
@@ -382,4 +382,30 @@
 
 .mobile-menu-button.open .hamburger-line:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
+}
+
+/* =============================================== */
+/* SOLUCIÓN PARA SUPERPOSICIÓN - AGREGAR AL FINAL */
+/* =============================================== */
+
+/* Espacio reservado para el header - SOLUCIÓN A LA SUPERPOSICIÓN */
+.header-spacer {
+  height: var(--header-height);
+  width: 100%;
+  transition: var(--transition);
+}
+
+.header.scrolled ~ .header-spacer {
+  height: calc(var(--header-height) - 10px);
+}
+
+/* Corrección para responsive */
+@media (max-width: 768px) {
+  .header-spacer {
+    height: var(--header-height-mobile);
+  }
+  
+  .header.scrolled ~ .header-spacer {
+    height: calc(var(--header-height-mobile) - 5px);
+  }
 }
