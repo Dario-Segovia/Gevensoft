@@ -19,9 +19,25 @@
     margin-bottom: 1rem;
   }
   
+  /* Estilos específicos para la imagen en la página Nosotros - MÁS GRANDE */
+  .nosotros-container .header-logo {
+    max-width: 200px; /* Imagen mucho más grande */
+    width: 100%;
+    height: auto;
+    margin: 2rem 0;
+    border-radius: 12px;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+    transition: transform 0.3s ease;
+  }
+  
+  .nosotros-container .header-logo:hover {
+    transform: scale(1.03);
+  }
+  
   .hero h1 {
     font-size: 2.5rem;
     color: #2c3e50;
+    margin-bottom: 0.5rem;
   }
   
   .descripcion, .valores, .ubicacion {
@@ -68,5 +84,18 @@
       flex-direction: column;
       align-items: stretch;
     }
+    
+    .nosotros-container .header-logo {
+      max-width: 300px; /* Aún grande pero se adapta a móviles */
+    }
+    
+    .hero h1 {
+      font-size: 2rem;
+    }
   }
   
+  @media (max-width: 480px) {
+    .nosotros-container .header-logo {
+      max-width: 250px; /* Un poco más pequeño en móviles muy pequeños */
+    }
+  }
