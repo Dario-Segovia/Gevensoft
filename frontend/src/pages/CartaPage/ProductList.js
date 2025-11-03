@@ -109,7 +109,7 @@ const ProductList = ({ productos }) => {
           const primeraImagen =
             primeraVariante?.imagenes?.[0]
               ? `${primeraVariante.imagenes[0]}`
-              : `${baseURL}/IMG/default.jpg`;
+              : `${baseURL}/default.jpg`;
 
           return (
             <div key={producto.id_producto} className="product-card">
@@ -121,7 +121,7 @@ const ProductList = ({ productos }) => {
                 onError={(e) => {
                   console.error("Error loading image:", e);
                   e.target.onerror = null;
-                  e.target.src = `${baseURL}/IMG/default.jpg`;
+                  e.target.src = `${baseURL}/default.jpg`;
                 }}
               />
             </div>

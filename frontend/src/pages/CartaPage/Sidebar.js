@@ -1,10 +1,9 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import "./Sidebar.css";
 
 // Función para verificar si la imagen existe
 const checkImageExists = async (url) => {
-  // Si no hay URL, retornamos false inmediatamente
   if (!url) return false;
   
   return new Promise((resolve) => {
@@ -15,30 +14,54 @@ const checkImageExists = async (url) => {
   });
 };
 
+// Hook personalizado para manejar imágenes de categoría
+const useCategoryIcon = (category) => {
+  const [iconUrl, setIconUrl] = useState('/categorias/default.jpg');
+  
+  useEffect(() => {
+    const verifyImage = async () => {
+      // Verificar imagen de la API primero
+      const apiIconUrl = category.Url_icono || category.icono || category.icon_url;
+      
+      if (apiIconUrl && await checkImageExists(apiIconUrl)) {
+        setIconUrl(apiIconUrl);
+        return;
+      }
+      
+      // Fallback a imagen local
+      const localIconUrl = `/default.jpg`;
+      const localExists = await checkImageExists(localIconUrl);
+      setIconUrl(localExists ? localIconUrl : '/default.jpg');
+    };
+    
+    verifyImage();
+  }, [category.Url_icono, category.icono, category.icon_url]);
+  
+  return iconUrl;
+};
+
+// Función auxiliar para construir nombres de propiedades consistentes
+const getCategoryIcon = (category) => {
+  return category.Url_icono || category.icono || category.icon_url || null;
+};
+
 const buildCategoryTree = (categories) => {
   const categoryMap = {};
   const rootCategories = [];
   
-  // Crear mapa de categorías - USAMOS LA URL DE LA API DIRECTAMENTE
   categories.forEach(category => {
     categoryMap[category.id_categoria] = { 
       ...category, 
       children: [],
       isExpanded: false,
-      // Usamos la URL del icono que viene de la API
-      // Asegúrate de que el nombre de la propiedad coincida con tu API
-      Url_icono: category.Url_icono || category.icono || category.icon_url || null
+      Url_icono: getCategoryIcon(category)
     };
   });
   
-  // Construir árbol
   categories.forEach(category => {
-    if (category.id_padre) {
-      const parent = categoryMap[category.id_padre];
-      if (parent) {
-        parent.children.push(categoryMap[category.id_categoria]);
-      }
-    } else {
+    if (category.id_padre && categoryMap[category.id_padre]) {
+      categoryMap[category.id_padre].children.push(categoryMap[category.id_categoria]);
+    } else if (!category.id_padre) {
       rootCategories.push(categoryMap[category.id_categoria]);
     }
   });
@@ -46,44 +69,34 @@ const buildCategoryTree = (categories) => {
   return rootCategories;
 };
 
-const CategoryItem = ({ category, onClickCategoria, isParent, t }) => {
-  const [isExpanded, setIsExpanded] = useState(false);
-  const [iconUrl, setIconUrl] = useState('/categorias/default.jpg');
+// Función auxiliar para obtener texto traducido
+const getTranslatedCategoryName = (category, t) => {
+  const description = category.descripcion?.toLowerCase?.() || 'sin_categoria';
+  const translationKey = `categoria.${description}`;
+  const translated = t(translationKey);
   
-  // Verificar si la imagen existe al montar el componente
-  useEffect(() => {
-    const verifyImage = async () => {
-      // Primero verificamos si la imagen de la API existe
-      if (category.Url_icono) {
-        const exists = await checkImageExists(category.Url_icono);
-        if (exists) {
-          setIconUrl(category.Url_icono);
-          return;
-        }
-      }
-      
-      // Si no existe la imagen de la API, intentamos con la ruta local basada en ID
-      const localIconUrl = `/categorias/${category.id_categoria}.jpg`;
-      const localExists = await checkImageExists(localIconUrl);
-      
-      setIconUrl(localExists ? localIconUrl : '/categorias/default.jpg');
-    };
-    
-    verifyImage();
-  }, [category.Url_icono, category.id_categoria]);
+  // Si la traducción devuelve la misma clave, usar la descripción original
+  return translated === translationKey ? category.descripcion : translated;
+};
 
-  const handleToggle = (e) => {
+const CategoryItem = React.memo(({ category, onClickCategoria, isParent, t }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+  const iconUrl = useCategoryIcon(category);
+
+  const handleToggle = useCallback((e) => {
     e.stopPropagation();
     if (isParent) {
-      setIsExpanded(!isExpanded);
+      setIsExpanded(prev => !prev);
     }
-  };
+  }, [isParent]);
 
-  const handleCategoryClick = () => {
-    if (!isParent) {
+  const handleCategoryClick = useCallback(() => {
+    if (!isParent && onClickCategoria) {
       onClickCategoria(category.id_categoria);
     }
-  };
+  }, [isParent, onClickCategoria, category.id_categoria]);
+
+  const displayName = getTranslatedCategoryName(category, t);
   
   return (
     <li className={`sidebar-item ${isParent ? 'parent' : ''}`}>
@@ -97,16 +110,12 @@ const CategoryItem = ({ category, onClickCategoria, isParent, t }) => {
           alt={category.Descripcion} 
           className="icono-categoria"
           onError={(e) => {
-            e.target.src = '/categorias/default.jpg';
+            if (e.target.src !== '/default.jpg') {
+              e.target.src = '/default.jpg';
+            }
           }} 
         />
-        <span>
-          {t(`categoria.${category.descripcion?.toLowerCase?.() || 'sin_categoria'}`) === 
-           `categoria.${category.descripcion?.toLowerCase?.()}` 
-            ? category.descripcion 
-            : t(`categoria.${category.descripcion?.toLowerCase?.() || 'sin_categoria'}`)
-          }
-        </span>
+        <span>{displayName}</span>
         
         {isParent && (
           <span 
@@ -118,7 +127,7 @@ const CategoryItem = ({ category, onClickCategoria, isParent, t }) => {
         )}
       </div>
       
-      {isParent && isExpanded && (
+      {isParent && isExpanded && category.children.length > 0 && (
         <ul className="nested-categories">
           {category.children.map(child => (
             <CategoryItem
@@ -133,17 +142,16 @@ const CategoryItem = ({ category, onClickCategoria, isParent, t }) => {
       )}
     </li>
   );
-};
+});
 
 const Sidebar = ({ categorias, onClickCategoria }) => {
   const { t } = useTranslation();
-  const [categoryTree, setCategoryTree] = useState([]);
-
-  // Construir el árbol de categorías
-  useEffect(() => {
+  
+  const categoryTree = useMemo(() => {
     if (categorias && categorias.length > 0) {
-      setCategoryTree(buildCategoryTree(categorias));
+      return buildCategoryTree(categorias);
     }
+    return [];
   }, [categorias]);
 
   return (
