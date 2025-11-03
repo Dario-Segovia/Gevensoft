@@ -2,8 +2,10 @@ const pool = require("../models/db");
 
 const getCategorias = async (req, res) => {
   try {
-    const [rows] = await pool.query('SELECT * FROM categoria ORDER BY descripcion');
-    res.json(rows); // MySQL devuelve un array como [rows, fields]
+    const [rows] = await pool.query(
+      'SELECT id_categoria, descripcion, ingles, id_padre, color_fondo, color_texto, tam_texto, orden, icono FROM categoria ORDER BY descripcion'
+    );
+    res.json(rows);
   } catch (err) {
     console.error("Error en getCategorias:", err.message);
     res.status(500).json({ error: err.message });
@@ -25,7 +27,11 @@ const getProductosPorCategoria = async (req, res) => {
         p.DescipcionCorta, 
         p.DescripcionLarga, 
         p.Coste,
-        c.descripcion AS categoria
+        p.\`N-Ingles\`,
+        p.\`C-Inlges\`,
+        p.\`L-Ingles\`,
+        c.descripcion AS categoria,
+        c.ingles AS categoria_ingles
       FROM producto p
       JOIN categoria_asociada ca ON p.id_producto = ca.id_producto
       JOIN categoria c ON ca.id_categoria = c.id_categoria
@@ -42,7 +48,6 @@ const getProductosPorCategoria = async (req, res) => {
   }
 };
 
-
 const getProductos = async (req, res) => {
   try {
     const query = `
@@ -52,15 +57,20 @@ const getProductos = async (req, res) => {
         p.DescipcionCorta, 
         p.DescripcionLarga, 
         p.Coste,
+        p.\`N-Ingles\`,
+        p.\`C-Inlges\`,
+        p.\`L-Ingles\`,
 
         v.id_variante,
         v.Nombre AS varianteNombre,
+        v.Ingles AS varianteIngles,
         v.Precio,
         (p.Coste + v.Precio) AS PrecioCalculado,
         g.url_imagen,
 
         op.id_opcion,
-        op.descripcion AS descripcion_opcion
+        op.descripcion AS descripcion_opcion,
+        op.ingles AS opcion_ingles
 
       FROM producto p
       LEFT JOIN variante v ON p.id_producto = v.id_producto
@@ -83,6 +93,9 @@ const getProductos = async (req, res) => {
           DescipcionCorta: row.DescipcionCorta,
           DescripcionLarga: row.DescripcionLarga,
           Coste: row.Coste,
+          'N-Ingles': row['N-Ingles'],
+          'C-Inlges': row['C-Inlges'],
+          'L-Ingles': row['L-Ingles'],
           variantes: new Map(),
           opciones: new Map()
         });
@@ -95,6 +108,7 @@ const getProductos = async (req, res) => {
         producto.variantes.set(row.id_variante, {
           id_variante: row.id_variante,
           Nombre: row.varianteNombre,
+          Ingles: row.varianteIngles,
           Precio: row.Precio,
           PrecioCalculado: row.PrecioCalculado,
           imagenes: []
@@ -112,7 +126,8 @@ const getProductos = async (req, res) => {
       if (row.id_opcion && !producto.opciones.has(row.id_opcion)) {
         producto.opciones.set(row.id_opcion, {
           id_opcion: row.id_opcion,
-          descripcion: row.descripcion_opcion
+          descripcion: row.descripcion_opcion,
+          ingles: row.opcion_ingles
         });
       }
     });
@@ -124,6 +139,9 @@ const getProductos = async (req, res) => {
       DescipcionCorta: producto.DescipcionCorta,
       DescripcionLarga: producto.DescripcionLarga,
       Coste: producto.Coste,
+      'N-Ingles': producto['N-Ingles'],
+      'C-Inlges': producto['C-Inlges'],
+      'L-Ingles': producto['L-Ingles'],
       variantes: Array.from(producto.variantes.values()),
       opciones: Array.from(producto.opciones.values())
     }));
@@ -135,8 +153,6 @@ const getProductos = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-
-
 
 module.exports = {
   getCategorias,

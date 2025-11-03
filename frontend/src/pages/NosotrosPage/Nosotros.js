@@ -4,7 +4,8 @@ import "./Nosotros.css";
 import logoLocal from '../../assets/logo.jpg'; 
 
 function Nosotros() {
-  const { t } = useTranslation();
+  const { i18n } = useTranslation();
+  const currentLanguage = i18n.language;
   const [empresa, setEmpresa] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -16,36 +17,56 @@ function Nosotros() {
         const data = await res.json();
         setEmpresa(data[0]);
       } catch (err) {
-        setError(t("common.error_cargar_info"));
+        setError(currentLanguage === 'en' ? 'Error loading information' : 'Error al cargar la información');
       } finally {
         setLoading(false);
       }
     };
 
     fetchEmpresa();
-  }, [t]);
+  }, [currentLanguage]);
 
-  // Función para construir la URL del logo - CORREGIDA
+  // Función para construir la URL del logo
   const getLogoUrl = () => {
     if (!empresa?.logo) return logoLocal;
     
-    // Si el logo ya es una URL completa
     if (empresa.logo.startsWith('http')) {
       return empresa.logo;
     }
     
-    // Si es una ruta relativa, construir la URL completa
     return `http://localhost:3000${empresa.logo.startsWith('/') ? '' : '/'}${empresa.logo}`;
   };
 
-  if (loading) return <div className="loading">{t("common.cargando")}</div>;
+  // Función para obtener el nombre de la empresa según el idioma
+  const getCompanyName = () => {
+    if (currentLanguage === 'en' && empresa?.ingles) {
+      return empresa.ingles;
+    }
+    return empresa?.nombre || (currentLanguage === 'en' ? 'Our Company' : 'Nuestra Empresa');
+  };
+
+  // Textos según idioma
+  const texts = {
+    sobre: currentLanguage === 'en' ? 'About' : 'Sobre',
+    quienes_somos: currentLanguage === 'en' ? 'Who We Are' : 'Quiénes Somos',
+    fundada: currentLanguage === 'en' ? 'Founded in' : 'Fundada en',
+    nuestros_valores: currentLanguage === 'en' ? 'Our Values' : 'Nuestros Valores',
+    compromiso: currentLanguage === 'en' ? 'Commitment to excellence' : 'Compromiso con la excelencia',
+    innovacion: currentLanguage === 'en' ? 'Constant innovation' : 'Innovación constante',
+    calidad: currentLanguage === 'en' ? 'Uncompromising quality' : 'Calidad sin compromisos',
+    transparencia: currentLanguage === 'en' ? 'Total transparency' : 'Transparencia total',
+    ubicacion: currentLanguage === 'en' ? 'Location' : 'Ubicación',
+    texto_footer: currentLanguage === 'en' ? 'Thank you for trusting us' : 'Gracias por confiar en nosotros',
+    cargando: currentLanguage === 'en' ? 'Loading...' : 'Cargando...'
+  };
+
+  if (loading) return <div className="loading">{texts.cargando}</div>;
   if (error) return <div className="error">{error}</div>;
 
   return (
     <div className="nosotros-container">
       <div className="hero">
-        <h1>{t("SobreNosotros.sobre")} {empresa?.nombre}</h1>
-        {/* Mostrar siempre la imagen, usando el fallback si es necesario */}
+        <h1>{texts.sobre} {getCompanyName()}</h1>
         <img 
           src={getLogoUrl()}
           alt="Logo del restaurante" 
@@ -54,23 +75,23 @@ function Nosotros() {
       </div>
 
       <section className="descripcion">
-        <h2>{t("SobreNosotros.quienes_somos")}</h2>
+        <h2>{texts.quienes_somos}</h2>
         <p>{empresa?.razon_social}</p>
-        <p>{t("SobreNosotros.fundada")} {new Date(empresa?.fecha_alta).getFullYear()}</p>
+        <p>{texts.fundada} {new Date(empresa?.fecha_alta).getFullYear()}</p>
       </section>
 
       <section className="valores">
-        <h2>{t("SobreNosotros.nuestros_valores")}</h2>
+        <h2>{texts.nuestros_valores}</h2>
         <ul>
-          <li>{t("valores.compromiso")}</li>
-          <li>{t("valores.innovacion")}</li>
-          <li>{t("valores.calidad")}</li>
-          <li>{t("valores.transparencia")}</li>
+          <li>{texts.compromiso}</li>
+          <li>{texts.innovacion}</li>
+          <li>{texts.calidad}</li>
+          <li>{texts.transparencia}</li>
         </ul>
       </section>
 
       <section className="ubicacion">
-        <h2>{t("SobreNosotros.ubicacion")}</h2>
+        <h2>{texts.ubicacion}</h2>
         <p>
           {empresa?.direccion}, {empresa?.codigo_postal}
         </p>
@@ -80,7 +101,7 @@ function Nosotros() {
       </section>
 
       <footer className="footer-nosotros">
-        {t("SobreNosotros.texto_footer")}
+        {texts.texto_footer}
       </footer>
     </div>
   );

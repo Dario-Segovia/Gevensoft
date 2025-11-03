@@ -16,6 +16,44 @@ const Auth = () => {
     pais: '',
   });
 
+  // Obtener idioma actual
+  const currentLanguage = localStorage.getItem('i18nextLng') || 'es';
+
+  // Textos según idioma
+  const texts = {
+    login: {
+      title: currentLanguage === 'en' ? 'Sign In' : 'Iniciar Sesión',
+      button: currentLanguage === 'en' ? 'Log In' : 'Entrar'
+    },
+    register: {
+      title: currentLanguage === 'en' ? 'Create Account' : 'Crear Cuenta',
+      button: currentLanguage === 'en' ? 'Register' : 'Registrarse',
+      name: currentLanguage === 'en' ? 'Name' : 'Nombre',
+      apellidos: currentLanguage === 'en' ? 'Last Name' : 'Apellidos',
+      telefono: currentLanguage === 'en' ? 'Phone' : 'Teléfono',
+      direccion: currentLanguage === 'en' ? 'Address' : 'Dirección',
+      codigo_postal: currentLanguage === 'en' ? 'Postal Code' : 'Código Postal',
+      poblacion: currentLanguage === 'en' ? 'City' : 'Población',
+      provincia: currentLanguage === 'en' ? 'Province' : 'Provincia',
+      pais: currentLanguage === 'en' ? 'Country' : 'País'
+    },
+    recover: {
+      title: currentLanguage === 'en' ? 'Recover Password' : 'Recuperar Contraseña',
+      button: currentLanguage === 'en' ? 'Send Link' : 'Enviar enlace'
+    },
+    common: {
+      email: currentLanguage === 'en' ? 'Email' : 'Correo electrónico',
+      password: currentLanguage === 'en' ? 'Password' : 'Contraseña',
+      haveAccount: currentLanguage === 'en' ? 'Already have an account? Sign in' : '¿Ya tienes cuenta? Inicia sesión',
+      noAccount: currentLanguage === 'en' ? "Don't have an account? Register" : '¿No tienes cuenta? Regístrate',
+      forgotPassword: currentLanguage === 'en' ? 'Forgot your password?' : '¿Olvidaste tu contraseña?',
+      successLogin: currentLanguage === 'en' ? 'Login successful' : 'Inicio de sesión exitoso',
+      successRegister: currentLanguage === 'en' ? 'User registered successfully' : 'Usuario registrado correctamente',
+      successRecover: currentLanguage === 'en' ? 'Recovery token sent to email' : 'Se ha enviado el token de recuperación al correo',
+      error: currentLanguage === 'en' ? 'An unexpected error occurred' : 'Ocurrió un error inesperado'
+    }
+  };
+
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
@@ -33,18 +71,18 @@ const Auth = () => {
 
         const data = await response.json();
         if (response.ok) {
-          alert('Inicio de sesión exitoso');
-          localStorage.setItem('user', JSON.stringify(data.user)); // Guarda el usuario
-          window.location.reload(); // Esto recarga la página y actualiza el Header
+          alert(texts.common.successLogin);
+          localStorage.setItem('user', JSON.stringify(data.user));
+          window.location.reload();
         } else {
-          alert(`Error: ${data.message}`);
+          alert(`${currentLanguage === 'en' ? 'Error' : 'Error'}: ${data.message}`);
         }
       } else if (mode === 'register') {
         const response = await fetch('http://localhost:3000/api/register', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
-            nombre: form.name, // <-- Cambia 'name' por 'nombre'
+            nombre: form.name,
             apellidos: form.apellidos,
             email: form.email,
             password: form.password,
@@ -59,10 +97,10 @@ const Auth = () => {
 
         const data = await response.json();
         if (response.ok) {
-          alert('Usuario registrado correctamente');
+          alert(texts.common.successRegister);
           setMode('login');
         } else {
-          alert(`Error: ${data.message}`);
+          alert(`${currentLanguage === 'en' ? 'Error' : 'Error'}: ${data.message}`);
         }
       } else if (mode === 'recover') {
         const response = await fetch('http://localhost:3000/api/recover', {
@@ -73,26 +111,32 @@ const Auth = () => {
 
         const data = await response.json();
         if (response.ok) {
-          alert('Se ha enviado el token de recuperación al correo');
+          alert(texts.common.successRecover);
         } else {
-          alert(`Error: ${data.message}`);
+          alert(`${currentLanguage === 'en' ? 'Error' : 'Error'}: ${data.message}`);
         }
       }
     } catch (err) {
       console.error('Error en el formulario:', err);
-      alert('Ocurrió un error inesperado');
+      alert(texts.common.error);
     }
+  };
+
+  const getTitle = () => {
+    if (mode === 'login') return texts.login.title;
+    if (mode === 'register') return texts.register.title;
+    return texts.recover.title;
+  };
+
+  const getButtonText = () => {
+    if (mode === 'login') return texts.login.button;
+    if (mode === 'register') return texts.register.button;
+    return texts.recover.button;
   };
 
   return (
     <div className="auth-container">
-      <h2>
-        {mode === 'login'
-          ? 'Iniciar Sesión'
-          : mode === 'register'
-          ? 'Crear Cuenta'
-          : 'Recuperar Contraseña'}
-      </h2>
+      <h2>{getTitle()}</h2>
 
       <form onSubmit={handleSubmit}>
         {mode === 'register' && (
@@ -100,7 +144,7 @@ const Auth = () => {
             <input
               type="text"
               name="name"
-              placeholder="Nombre"
+              placeholder={texts.register.name}
               value={form.name}
               onChange={handleChange}
               required
@@ -108,49 +152,49 @@ const Auth = () => {
             <input
               type="text"
               name="apellidos"
-              placeholder="Apellidos"
+              placeholder={texts.register.apellidos}
               value={form.apellidos}
               onChange={handleChange}
             />
             <input
               type="text"
               name="telefono"
-              placeholder="Teléfono"
+              placeholder={texts.register.telefono}
               value={form.telefono}
               onChange={handleChange}
             />
             <input
               type="text"
               name="direccion"
-              placeholder="Dirección"
+              placeholder={texts.register.direccion}
               value={form.direccion}
               onChange={handleChange}
             />
             <input
               type="text"
               name="codigo_postal"
-              placeholder="Código Postal"
+              placeholder={texts.register.codigo_postal}
               value={form.codigo_postal}
               onChange={handleChange}
             />
             <input
               type="text"
               name="poblacion"
-              placeholder="Población"
+              placeholder={texts.register.poblacion}
               value={form.poblacion}
               onChange={handleChange}
             />
             <input
               type="text"
               name="provincia"
-              placeholder="Provincia"
+              placeholder={texts.register.provincia}
               value={form.provincia}
               onChange={handleChange}
             />
             <input
               type="text"
               name="pais"
-              placeholder="País"
+              placeholder={texts.register.pais}
               value={form.pais}
               onChange={handleChange}
             />
@@ -160,7 +204,7 @@ const Auth = () => {
         <input
           type="email"
           name="email"
-          placeholder="Correo electrónico"
+          placeholder={texts.common.email}
           value={form.email}
           onChange={handleChange}
           required
@@ -170,7 +214,7 @@ const Auth = () => {
           <input
             type="password"
             name="password"
-            placeholder="Contraseña"
+            placeholder={texts.common.password}
             value={form.password}
             onChange={handleChange}
             required
@@ -178,23 +222,19 @@ const Auth = () => {
         )}
 
         <button type="submit">
-          {mode === 'login'
-            ? 'Entrar'
-            : mode === 'register'
-            ? 'Registrarse'
-            : 'Enviar enlace'}
+          {getButtonText()}
         </button>
       </form>
 
       <div className="auth-links">
         {mode !== 'login' && (
-          <span onClick={() => setMode('login')}>¿Ya tienes cuenta? Inicia sesión</span>
+          <span onClick={() => setMode('login')}>{texts.common.haveAccount}</span>
         )}
         {mode !== 'register' && (
-          <span onClick={() => setMode('register')}>¿No tienes cuenta? Regístrate</span>
+          <span onClick={() => setMode('register')}>{texts.common.noAccount}</span>
         )}
         {mode !== 'recover' && (
-          <span onClick={() => setMode('recover')}>¿Olvidaste tu contraseña?</span>
+          <span onClick={() => setMode('recover')}>{texts.common.forgotPassword}</span>
         )}
       </div>
     </div>

@@ -9,7 +9,8 @@ import logoLocal from '../assets/logo.jpg';
 import SideCart from "./SideCart";
 
 function Header() {
-  const { t } = useTranslation();
+  const { i18n } = useTranslation();
+  const currentLanguage = i18n.language;
   const { carrito } = useCart();
   const [empresaData, setEmpresaData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -34,7 +35,6 @@ function Header() {
       setIsScrolled(window.scrollY > 10);
     };
     
-    // Debounce manual
     let ticking = false;
     const debouncedScroll = () => {
       if (!ticking) {
@@ -65,16 +65,16 @@ function Header() {
       setEmpresaData(empresa);
     } catch (err) {
       console.error('Error fetching empresa data:', err);
-      setError(t("header.dataError"));
+      setError(currentLanguage === 'en' ? 'Error loading data' : 'Error al cargar datos');
       // Datos de respaldo
       setEmpresaData({
-        nombre: 'Mi Restaurante',
+        nombre: currentLanguage === 'en' ? 'My Restaurant' : 'Mi Restaurante',
         logo: logoLocal
       });
     } finally {
       setLoading(false);
     }
-  }, [t]);
+  }, [currentLanguage]);
 
   useEffect(() => {
     fetchEmpresaData();
@@ -103,19 +103,51 @@ function Header() {
   const getLogoUrl = () => {
     if (!empresaData?.logo) return logoLocal;
     
-    // Si el logo ya es una URL completa
     if (empresaData.logo.startsWith('http')) {
       return empresaData.logo;
     }
     
-    // Si es una ruta relativa, construir la URL completa
     return `http://localhost:3000${empresaData.logo.startsWith('/') ? '' : '/'}${empresaData.logo}`;
+  };
+
+  // Función para obtener el nombre de la empresa según el idioma
+  const getCompanyName = () => {
+    if (currentLanguage === 'en' && empresaData?.ingles) {
+      return empresaData.ingles;
+    }
+    return empresaData?.nombre || (currentLanguage === 'en' ? 'My Restaurant' : 'Mi Restaurante');
+  };
+
+  // Función para obtener el texto del footer según el idioma
+  const getFooterText = () => {
+    if (currentLanguage === 'en' && empresaData?.texto_footer_ingles) {
+      return empresaData.texto_footer_ingles;
+    }
+    return empresaData?.texto_footer || texts.slogan;
   };
 
   const handleLogout = () => {
     localStorage.removeItem('user');
     setUser(null);
     localStorage.setItem('logout', Date.now());
+  };
+
+  // Textos según idioma
+  const texts = {
+    home: currentLanguage === 'en' ? 'Home' : 'Inicio',
+    productos: currentLanguage === 'en' ? 'Products' : 'Productos',
+    sobreNosotros: currentLanguage === 'en' ? 'About Us' : 'Sobre Nosotros',
+    contacto: currentLanguage === 'en' ? 'Contact' : 'Contacto',
+    logoAlt: currentLanguage === 'en' ? 'Restaurant Logo' : 'Logo del Restaurante',
+    slogan: currentLanguage === 'en' ? 'Quality and Tradition' : 'Calidad y Tradición',
+    openMenu: currentLanguage === 'en' ? 'Open menu' : 'Abrir menú',
+    closeMenu: currentLanguage === 'en' ? 'Close menu' : 'Cerrar menú',
+    userMenu: currentLanguage === 'en' ? 'User menu' : 'Menú de usuario',
+    profile: currentLanguage === 'en' ? 'Profile' : 'Perfil',
+    logout: currentLanguage === 'en' ? 'Logout' : 'Cerrar Sesión',
+    iniciarSesion: currentLanguage === 'en' ? 'Sign In' : 'Iniciar Sesión',
+    cart: currentLanguage === 'en' ? 'Shopping cart' : 'Carrito de compras',
+    dataError: currentLanguage === 'en' ? 'Error loading data' : 'Error al cargar datos'
   };
 
   if (loading && !empresaData) return (
@@ -127,47 +159,45 @@ function Header() {
   return (
     <>
       <header className={`header ${isScrolled ? 'scrolled' : ''} ${mobileMenuOpen ? 'mobile-open' : ''}`}>
-        {/* Hamburguer menu para móvil */}
         <button 
           className="mobile-menu-button" 
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          aria-label={mobileMenuOpen ? t("header.closeMenu") : t("header.openMenu")}
+          aria-label={mobileMenuOpen ? texts.closeMenu : texts.openMenu}
         >
           {mobileMenuOpen ? <FaTimes /> : <FaBars />}
         </button>
 
         <div className="header-branding">
-          <Link to="/" className="logo-link" aria-label={t("header.home")}>
+          <Link to="/" className="logo-link" aria-label={texts.home}>
             <img 
               src={getLogoUrl()}
-              alt={t("header.logoAlt")} 
+              alt={texts.logoAlt} 
               className="header-logo"
               width="50"
               height="50"
               onError={(e) => {
-                // Fallback a logo local si hay error al cargar el logo de la API
                 e.target.src = logoLocal;
               }}
             />
             <h1 className="header-title">
-              {empresaData?.nombre || 'Mi Restaurante'}
-              <span className="header-subtitle">{empresaData?.texto_footer || t("header.slogan")}</span>
+              {getCompanyName()}
+              <span className="header-subtitle">{getFooterText()}</span>
             </h1>
           </Link>
         </div>
 
         <nav className={`nav ${mobileMenuOpen ? 'open' : ''}`}>
           <Link to="/" className="nav-button" activeclassname="active">
-            {t("header.home")}
+            {texts.home}
           </Link>
           <Link to="/carta" className="nav-button" activeclassname="active">
-            {t("header.productos")}
+            {texts.productos}
           </Link>
           <Link to="/nosotros" className="nav-button" activeclassname="active">
-            {t("header.sobreNosotros")}
+            {texts.sobreNosotros}
           </Link>
           <Link to="/contacto" className="nav-button" activeclassname="active">
-            {t("header.contacto")}
+            {texts.contacto}
           </Link>
         </nav>
 
@@ -176,28 +206,28 @@ function Header() {
           
           {user ? (
             <div className="user-dropdown">
-              <button className="user-button" aria-label={t("header.userMenu")}>
+              <button className="user-button" aria-label={texts.userMenu}>
                 <FaUser />
                 <span className="user-name">{user.nombre.split(' ')[0]}</span>
               </button>
               <div className="dropdown-content">
                 <Link to="/perfil" className="dropdown-item">
-                  {t("header.profile")}
+                  {texts.profile}
                 </Link>
                 <button onClick={handleLogout} className="dropdown-item">
-                  <FaSignOutAlt /> {t("header.logout")}
+                  <FaSignOutAlt /> {texts.logout}
                 </button>
               </div>
             </div>
           ) : (
             <Link to="/auth" className="auth-button">
-              {t("header.iniciarSesion")}
+              {texts.iniciarSesion}
             </Link>
           )}
 
           <button
             className="cart-button"
-            aria-label={t("header.cart")}
+            aria-label={texts.cart}
             onClick={() => setSideCartOpen(true)}
             data-badge={totalItems > 0 ? totalItems : null}
           >
@@ -206,7 +236,6 @@ function Header() {
         </div>
       </header>
       
-      {/* ESPACIO RESERVADO - SOLUCIÓN A LA SUPERPOSICIÓN */}
       <div className="header-spacer"></div>
       
       <SideCart 
@@ -214,7 +243,6 @@ function Header() {
         onClose={() => setSideCartOpen(false)} 
       />
       
-      {/* Overlay para menú móvil */}
       {mobileMenuOpen && (
         <div 
           className="mobile-menu-overlay" 

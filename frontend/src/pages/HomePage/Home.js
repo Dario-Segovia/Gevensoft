@@ -2,10 +2,11 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import "./Home.css";
-import logoLocal from '../../assets/background.jpg'; // Importamos la imagen local como fallback
+import logoLocal from '../../assets/background.jpg';
 
 function Home() {
-  const { t } = useTranslation();
+  const { i18n } = useTranslation();
+  const currentLanguage = i18n.language;
   const [empresaweb, setEmpresaWeb] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -18,13 +19,12 @@ function Home() {
         const data = await res.json();
         setEmpresaWeb(data[0]);
         
-        // Si hay datos y hay una URL de imagen, usarla
         if (data[0]?.url_image) {
           const imageUrl = getImageUrl(data[0].url_image);
           setBackgroundImage(imageUrl);
         }
       } catch (err) {
-        setError(t("common.error_cargar_info"));
+        setError(currentLanguage === 'en' ? 'Error loading information' : 'Error al cargar la información');
         console.error('Error fetching empresa web data:', err);
       } finally {
         setLoading(false);
@@ -32,19 +32,57 @@ function Home() {
     };
 
     fetchEmpresaWeb();
-  }, [t]);
+  }, [currentLanguage]);
 
   // Función para construir la URL de la imagen
   const getImageUrl = (urlImage) => {
     if (!urlImage) return logoLocal;
     
-    // Si la imagen ya es una URL completa
     if (urlImage.startsWith('http')) {
       return urlImage;
     }
     
-    // Si es una ruta relativa, construir la URL completa
     return `http://localhost:3000${urlImage.startsWith('/') ? '' : '/'}${urlImage}`;
+  };
+
+  // Función para obtener texto traducido de empresaweb
+  const getTranslatedText = (field) => {
+    if (!empresaweb) return getDefaultText(field);
+    
+    if (currentLanguage === 'en') {
+      // Buscar campo en inglés (sufijo _ingles)
+      const englishField = empresaweb[`${field}_ingles`];
+      return englishField || empresaweb[field] || getDefaultText(field);
+    }
+    return empresaweb[field] || getDefaultText(field);
+  };
+
+  // Textos por defecto
+  const getDefaultText = (field) => {
+    const defaultTexts = {
+      Welcome_title: currentLanguage === 'en' ? 'Welcome to Our Restaurant' : 'Bienvenido a Nuestro Restaurante',
+      Welcome_text: currentLanguage === 'en' ? 'Discover an unforgettable culinary experience' : 'Descubre una experiencia culinaria inolvidable',
+      About_title: currentLanguage === 'en' ? 'Our Story' : 'Nuestra Historia',
+      About_text: currentLanguage === 'en' ? 'Years of tradition and flavor' : 'Años de tradición y sabor',
+      Customer_title: currentLanguage === 'en' ? 'What Our Customers Say' : 'Lo que Dicen Nuestros Clientes',
+      Customer_satisfied: currentLanguage === 'en' ? 'Excellent service and incredible food!' : '¡Excelente servicio y comida increíble!',
+      Customer_appreciated: currentLanguage === 'en' ? 'The best dining experience in town' : 'La mejor experiencia gastronómica de la ciudad',
+      Contact_title: currentLanguage === 'en' ? 'Contact Us' : 'Contáctanos',
+      Contact_text: currentLanguage === 'en' ? 'We are here to serve you' : 'Estamos aquí para servirte'
+    };
+    return defaultTexts[field] || '';
+  };
+
+  // Textos para botones
+  const buttonTexts = {
+    explora: currentLanguage === 'en' ? 'Explore Menu' : 'Explorar Carta',
+    historia: currentLanguage === 'en' ? 'Our Story' : 'Nuestra Historia',
+    contacto: currentLanguage === 'en' ? 'Contact Us' : 'Contáctanos'
+  };
+
+  const testimonialAuthors = {
+    satisfecho: currentLanguage === 'en' ? 'Satisfied Customer' : 'Cliente Satisfecho',
+    apreciado: currentLanguage === 'en' ? 'Valued Customer' : 'Cliente Apreciado'
   };
 
   // Manejar error en la carga de la imagen
@@ -53,7 +91,7 @@ function Home() {
     setBackgroundImage(logoLocal);
   };
 
-  if (loading) return <div className="loading">{t("common.cargando")}</div>;
+  if (loading) return <div className="loading">{currentLanguage === 'en' ? 'Loading...' : 'Cargando...'}</div>;
   if (error) return <div className="error">{error}</div>;
 
   return (
@@ -62,10 +100,9 @@ function Home() {
         className="hero-section"
         style={{ 
           backgroundImage: `url(${backgroundImage})`,
-          position: 'relative' // Para poder agregar un overlay si es necesario
+          position: 'relative'
         }}
       >
-        {/* Preload la imagen para manejar errores */}
         <img 
           src={backgroundImage} 
           alt="" 
@@ -74,46 +111,46 @@ function Home() {
         />
         <div className="hero-content">
           <h1 className="hero-title">
-            {empresaweb?.Welcome_title || t("home.welcome_title")}
+            {getTranslatedText('Welcome_title')}
           </h1>
           <p className="hero-description">
-            {empresaweb?.Welcome_text || t("home.welcome_text")}
+            {getTranslatedText('Welcome_text')}
           </p>
           <Link to="/carta" className="cta-button">
-            {t("home.button_explora")}
+            {buttonTexts.explora}
           </Link>
         </div>
       </section>
 
       <section className="about-section">
         <div className="about-content">
-          <h2>{empresaweb?.About_title || t("home.about_title")}</h2>
-          <p>{empresaweb?.About_text || t("home.about_text")}</p>
+          <h2>{getTranslatedText('About_title')}</h2>
+          <p>{getTranslatedText('About_text')}</p>
           <Link to="/nosotros" className="cta-button">
-            {t("home.button_historia")}
+            {buttonTexts.historia}
           </Link>
         </div>
       </section>
 
       <section className="testimonial-section">
-        <h2>{empresaweb?.Customer_title || t("home.customer_title")}</h2>
+        <h2>{getTranslatedText('Customer_title')}</h2>
         <div className="testimonials">
           <div className="testimonial">
-            <p>"{empresaweb?.Customer_satisfied || t("home.customer_satisfied")}"</p>
-            <span>- {t("home.cliente_satisfecho")}</span>
+            <p>"{getTranslatedText('Customer_satisfied')}"</p>
+            <span>- {testimonialAuthors.satisfecho}</span>
           </div>
           <div className="testimonial">
-            <p>"{empresaweb?.Customer_appreciated || t("home.customer_appreciated")}"</p>
-            <span>- {t("home.cliente_apreciado")}</span>
+            <p>"{getTranslatedText('Customer_appreciated')}"</p>
+            <span>- {testimonialAuthors.apreciado}</span>
           </div>
         </div>
       </section>
 
       <section className="contact-section">
-        <h2>{empresaweb?.Contact_title || t("home.contact_title")}</h2>
-        <p>{empresaweb?.Contact_text || t("home.contact_text")}</p>
+        <h2>{getTranslatedText('Contact_title')}</h2>
+        <p>{getTranslatedText('Contact_text')}</p>
         <Link to="/contacto" className="cta-button">
-          {t("home.button_contacto")}
+          {buttonTexts.contacto}
         </Link>
       </section>
     </div>

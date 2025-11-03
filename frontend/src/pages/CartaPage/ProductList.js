@@ -17,7 +17,8 @@ const ProductList = ({ productos }) => {
   const [modalProducto, setModalProducto] = useState(null);
 
   const { agregarAlCarrito } = useCart();
-  const { t } = useTranslation();
+  const { i18n } = useTranslation();
+  const currentLanguage = i18n.language;
 
   useEffect(() => {
     if (productos.length > 0) {
@@ -39,9 +40,25 @@ const ProductList = ({ productos }) => {
     }, {})
   );
 
+  // Función para obtener el nombre del producto según el idioma
+  const getProductName = (producto) => {
+    if (currentLanguage === 'en' && producto['N-Ingles']) {
+      return producto['N-Ingles'];
+    }
+    return producto.Nombre || 'Sin nombre';
+  };
+
+  // Función para obtener la descripción según el idioma
+  const getProductDescription = (producto) => {
+    if (currentLanguage === 'en' && producto['C-Inlges']) {
+      return producto['C-Inlges'];
+    }
+    return producto.DescipcionCorta || '';
+  };
+
   const filteredProducts = productosConPrimeraVariante.filter((producto) => {
     if (!producto) return false;
-    const productName = String(producto.Nombre || "");
+    const productName = getProductName(producto);
     const searchTermLower = String(searchTerm || "").toLowerCase();
     const productCost = Number(producto.Coste) || 0;
     return (
@@ -74,12 +91,19 @@ const ProductList = ({ productos }) => {
     agregarAlCarrito(item);
   };
 
+  // Textos según idioma
+  const texts = {
+    buscarProducto: currentLanguage === 'en' ? 'Search product...' : 'Buscar producto...',
+    rangoPrecio: currentLanguage === 'en' ? 'Price range:' : 'Rango de precio:',
+    agregarAlCarrito: currentLanguage === 'en' ? 'Add to cart' : 'Agregar al carrito'
+  };
+
   return (
     <div className="product-list-container">
       <div className="filters-container">
         <input
           type="text"
-          placeholder={t("common.buscar_producto")}
+          placeholder={texts.buscarProducto}
           value={searchTerm}
           onChange={handleSearch}
           className="search-bar"
@@ -87,7 +111,7 @@ const ProductList = ({ productos }) => {
 
         <div className="price-filter">
           <label>
-            {t("common.rango_precio")}: {sliderValue[0].toFixed(2)} € -{" "}
+            {texts.rangoPrecio} {sliderValue[0].toFixed(2)} € -{" "}
             {sliderValue[1].toFixed(2)} €
           </label>
           <RangeSlider
@@ -111,12 +135,15 @@ const ProductList = ({ productos }) => {
               ? `${primeraVariante.imagenes[0]}`
               : `${baseURL}/default.jpg`;
 
+          const productName = getProductName(producto);
+          const productDescription = getProductDescription(producto);
+
           return (
             <div key={producto.id_producto} className="product-card">
             <div className="product-image-container">
               <img
                 src={primeraImagen}
-                alt={producto.Nombre}
+                alt={productName}
                 className="product-image"
                 onError={(e) => {
                   console.error("Error loading image:", e);
@@ -127,8 +154,8 @@ const ProductList = ({ productos }) => {
             </div>
 
             <div className="product-info">
-              <h3 className="product-name">{producto.Nombre}</h3>
-              <p className="product-description">{producto.DescipcionCorta}</p>
+              <h3 className="product-name">{productName}</h3>
+              <p className="product-description">{productDescription}</p>
               <p className="product-cost">
                 {parseFloat(producto.Coste).toFixed(2)} €
               </p>
@@ -142,8 +169,8 @@ const ProductList = ({ productos }) => {
                     id_producto: producto.id_producto,
                     id_item: producto.id_producto,
                     tipo: "producto",
-                    Nombre: producto.Nombre,
-                    descripcion: producto.DescipcionCorta,
+                    Nombre: productName,
+                    descripcion: productDescription,
                     variante: producto.variantes[0],
                     cantidad: 1,
                     Coste: parseFloat(producto.variantes[0].Precio ?? producto.variantes[0].Coste ?? producto.Coste ?? 0)
@@ -155,14 +182,14 @@ const ProductList = ({ productos }) => {
                     id_producto: producto.id_producto,
                     id_item: producto.id_producto,
                     tipo: "producto",
-                    Nombre: producto.Nombre,
-                    descripcion: producto.DescipcionCorta,
+                    Nombre: productName,
+                    descripcion: productDescription,
                     cantidad: 1,
                     Coste: parseFloat(producto.Coste ?? 0)
                   });
                 }
               }}
-              title={t("common.agregar_al_carrito")}
+              title={texts.agregarAlCarrito}
             >
               <FaShoppingCart />
             </button>
@@ -176,7 +203,6 @@ const ProductList = ({ productos }) => {
           producto={modalProducto}
           onClose={() => setModalProducto(null)}
           onAgregar={(item) => {
-            // Si hay variante, sobreescribe los datos principales con los de la variante seleccionada
             const variante = item.variante;
             agregarAlCarrito({
               ...item,

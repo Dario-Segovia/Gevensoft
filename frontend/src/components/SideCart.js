@@ -7,6 +7,20 @@ function SideCart({ open, onClose }) {
   const { carrito, eliminarDelCarrito } = useCart();
   const navigate = useNavigate();
 
+  // Obtener idioma actual
+  const currentLanguage = localStorage.getItem('i18nextLng') || 'es';
+
+  // Textos según idioma
+  const texts = {
+    carritoVacio: currentLanguage === 'en' ? 'Cart is empty' : 'El carrito está vacío',
+    opcion: currentLanguage === 'en' ? 'Option' : 'Opción',
+    cantidad: currentLanguage === 'en' ? 'Quantity' : 'Cantidad',
+    precio: currentLanguage === 'en' ? 'Price' : 'Precio',
+    total: currentLanguage === 'en' ? 'Total' : 'Total',
+    confirmarPedido: currentLanguage === 'en' ? 'Confirm order' : 'Confirmar pedido',
+    eliminar: currentLanguage === 'en' ? 'Remove' : 'Eliminar'
+  };
+
   const total = carrito.reduce(
     (acc, item) => {
       const precioUnitario = Number(
@@ -30,16 +44,14 @@ function SideCart({ open, onClose }) {
         
         <div className="sidecart-content">
           {carrito.length === 0 ? (
-            <p>El carrito está vacío.</p>
+            <p>{texts.carritoVacio}</p>
           ) : (
             carrito.map(item => {
-              // Nombre
               const nombre =
                 item.variante?.Nombre ??
                 item.Nombre ??
                 (item.variante ? "" : "Producto sin nombre");
 
-              // Precio unitario
               const precioUnitario = Number(
                 item.variante?.Precio ??
                 item.variante?.Coste ??
@@ -48,7 +60,6 @@ function SideCart({ open, onClose }) {
                 0
               );
 
-              // Cantidad
               const cantidad = item.cantidad ?? 1;
 
               return (
@@ -60,14 +71,14 @@ function SideCart({ open, onClose }) {
                     <strong>{nombre}</strong>
                     {item.opcion && (
                       <div className="sidecart-opcion">
-                        Opción: {item.opcion.descripcion}
+                        {texts.opcion}: {item.opcion.descripcion}
                       </div>
                     )}
                     <div>
-                      Cantidad: {cantidad}
+                      {texts.cantidad}: {cantidad}
                     </div>
                     <div>
-                      Precio: {parseFloat(precioUnitario).toFixed(2)} €
+                      {texts.precio}: {parseFloat(precioUnitario).toFixed(2)} €
                     </div>
                   </div>
                   <button
@@ -79,7 +90,7 @@ function SideCart({ open, onClose }) {
                         item.opcion?.id_opcion
                       )
                     }
-                    title="Eliminar"
+                    title={texts.eliminar}
                   >
                     ❌
                   </button>
@@ -90,7 +101,7 @@ function SideCart({ open, onClose }) {
         </div>
         <footer className="sidecart-footer">
           <div className="sidecart-total">
-            Total: <strong>{total} €</strong>
+            {texts.total}: <strong>{total} €</strong>
           </div>
           <button
             className="sidecart-confirm"
@@ -100,7 +111,7 @@ function SideCart({ open, onClose }) {
               navigate("/carrito");
             }}
           >
-            Confirmar pedido
+            {texts.confirmarPedido}
           </button>
         </footer>
       </aside>

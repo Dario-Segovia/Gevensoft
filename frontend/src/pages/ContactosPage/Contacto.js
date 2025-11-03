@@ -4,7 +4,8 @@ import { FaMapMarkerAlt, FaPhone, FaEnvelope } from "react-icons/fa";
 import './Contacto.css';
 
 function Contacto() {
-  const { t } = useTranslation();
+  const { i18n } = useTranslation();
+  const currentLanguage = i18n.language;
   const [empresaData, setEmpresaData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -14,7 +15,7 @@ function Contacto() {
       try {
         const response = await fetch('http://localhost:3000/api/empresa');
         if (!response.ok) {
-          throw new Error(t("common.error_cargar_info"));
+          throw new Error(currentLanguage === 'en' ? 'Error loading information' : 'Error al cargar la información');
         }
         const data = await response.json();
         setEmpresaData(data[0]);
@@ -26,16 +27,34 @@ function Contacto() {
     };
 
     fetchData();
-  }, [t]);
+  }, [currentLanguage]);
 
-  if (loading) return <div className="loading">{t("common.cargando")}</div>;
-  if (error) return <div className="error">{t("common.error_cargar_info")}</div>;
+  // Función para obtener el nombre de la empresa según el idioma
+  const getCompanyName = () => {
+    if (currentLanguage === 'en' && empresaData?.ingles) {
+      return empresaData.ingles;
+    }
+    return empresaData?.nombre || (currentLanguage === 'en' ? 'Our Company' : 'Nuestra Empresa');
+  };
+
+  // Textos según idioma
+  const texts = {
+    sobre: currentLanguage === 'en' ? 'About' : 'Sobre',
+    ubicacion: currentLanguage === 'en' ? 'Location' : 'Ubicación',
+    telefono: currentLanguage === 'en' ? 'Phone' : 'Teléfono',
+    correo_electronico: currentLanguage === 'en' ? 'Email' : 'Correo electrónico',
+    cargando: currentLanguage === 'en' ? 'Loading...' : 'Cargando...',
+    error_cargar_info: currentLanguage === 'en' ? 'Error loading information' : 'Error al cargar la información'
+  };
+
+  if (loading) return <div className="loading">{texts.cargando}</div>;
+  if (error) return <div className="error">{texts.error_cargar_info}</div>;
 
   return (
     <div className="contact-container">
       <div className="company-header">
         <h1 className="contact-title">
-          {t("SobreNosotros.sobre")} - {empresaData.nombre}
+          {texts.sobre} - {getCompanyName()}
         </h1>
       </div>
 
@@ -43,7 +62,7 @@ function Contacto() {
         <div className="contact-item">
           <FaMapMarkerAlt className="contact-icon" />
           <div>
-            <h3>{t("common.ubicacion")}</h3>
+            <h3>{texts.ubicacion}</h3>
             <p>{empresaData.direccion}</p>
             <p>{empresaData.codigo_postal} {empresaData.poblacion}</p>
             <p>{empresaData.provincia}, {empresaData.pais}</p>
@@ -53,7 +72,7 @@ function Contacto() {
         <div className="contact-item">
           <FaPhone className="contact-icon" />
           <div>
-            <h3>{t("common.telefono")}</h3>
+            <h3>{texts.telefono}</h3>
             <p>{empresaData.telefono}</p>
           </div>
         </div>
@@ -61,7 +80,7 @@ function Contacto() {
         <div className="contact-item">
           <FaEnvelope className="contact-icon" />
           <div>
-            <h3>{t("common.correo_electronico")}</h3>
+            <h3>{texts.correo_electronico}</h3>
             <p>{empresaData.email}</p>
           </div>
         </div>

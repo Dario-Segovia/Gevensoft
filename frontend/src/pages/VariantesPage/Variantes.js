@@ -13,6 +13,21 @@ const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
   const [cantidad, setCantidad] = useState(1);
   const [loading, setLoading] = useState(false);
 
+  // Obtener idioma actual
+  const currentLanguage = localStorage.getItem('i18nextLng') || 'es';
+
+  // Textos según idioma
+  const texts = {
+    seleccionaVariante: currentLanguage === 'en' ? 'Select a variant' : 'Selecciona una variante',
+    opcionesDisponibles: currentLanguage === 'en' ? 'Available options' : 'Opciones disponibles',
+    seleccionaOpcion: currentLanguage === 'en' ? '-- Select an option (optional) --' : '-- Selecciona una opción (opcional) --',
+    quitarOpcion: currentLanguage === 'en' ? 'Remove selected option' : 'Quitar opción seleccionada',
+    total: currentLanguage === 'en' ? 'Total' : 'Total',
+    anadirAlCarrito: currentLanguage === 'en' ? 'Add to cart' : 'Añadir al carrito',
+    procesando: currentLanguage === 'en' ? 'Processing...' : 'Procesando...',
+    cerrar: currentLanguage === 'en' ? 'Close' : 'Cerrar'
+  };
+
   // Efectos para inicialización
   useEffect(() => {
     if (producto && varianteSeleccionada) {
@@ -25,6 +40,31 @@ const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
 
   // Memoización de valores calculados
   const varianteActual = producto?.variantes[indiceVariante] || {};
+  
+  // Función para obtener el nombre del producto según el idioma
+  const getProductName = (product) => {
+    if (currentLanguage === 'en' && product['N-Ingles']) {
+      return product['N-Ingles'];
+    }
+    return product.Nombre || 'Sin nombre';
+  };
+
+  // Función para obtener el nombre de la variante según el idioma
+  const getVariantName = (variant) => {
+    if (currentLanguage === 'en' && variant.Ingles) {
+      return variant.Ingles;
+    }
+    return variant.Nombre || '';
+  };
+
+  // Función para obtener la descripción de la opción según el idioma
+  const getOptionDescription = (option) => {
+    if (currentLanguage === 'en' && option.ingles) {
+      return option.ingles;
+    }
+    return option.descripcion || '';
+  };
+
   const precioBase = parseFloat(varianteActual.Precio || varianteActual.Coste || 0);
   const precioExtra = opcionSeleccionada?.precio_extra || 0;
   const precioTotal = (precioBase + precioExtra) * cantidad;
@@ -84,17 +124,17 @@ const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
         {/* Header del Modal */}
         <header className="modal-header">
           <div className="header-content">
-            <h2 className="product-title">{producto.Nombre}</h2>
+            <h2 className="product-title">{getProductName(producto)}</h2>
             <p className="product-category">{producto.categoria}</p>
           </div>
-          <button className="close-button" onClick={onClose} aria-label="Cerrar">
+          <button className="close-button" onClick={onClose} aria-label={texts.cerrar}>
             &times;
           </button>
         </header>
 
         {/* Selector de Variantes */}
         <section className="variante-selector-section">
-          <h3 className="section-title">Selecciona una variante</h3>
+          <h3 className="section-title">{texts.seleccionaVariante}</h3>
           <div className="variante-tabs">
             {producto.variantes.map((v, idx) => (
               <button
@@ -103,7 +143,7 @@ const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
                 onClick={() => handleCambioVariante(idx)}
                 aria-pressed={idx === indiceVariante}
               >
-                <span className="variante-name">{v.Nombre || producto.Nombre}</span>
+                <span className="variante-name">{getVariantName(v)}</span>
                 <span className="variante-price">{parseFloat(v.Precio || 0).toFixed(2)}€</span>
               </button>
             ))}
@@ -113,29 +153,29 @@ const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
         {/* Selector de Opciones */}
         {producto.opciones?.length > 0 && (
           <section className="opcion-selector-section">
-            <h3 className="section-title">Opciones disponibles</h3>
+            <h3 className="section-title">{texts.opcionesDisponibles}</h3>
             <div className="opcion-selector">
               <select
                 value={opcionSeleccionada?.id_opcion || ""}
                 onChange={handleCambioOpcion}
                 className="opcion-dropdown"
-                aria-label="Seleccionar opción"
+                aria-label={texts.seleccionaOpcion}
               >
-                <option value="">-- Selecciona una opción (opcional) --</option>
+                <option value="">{texts.seleccionaOpcion}</option>
                 {producto.opciones.map(opt => (
                   <option key={opt.id_opcion} value={opt.id_opcion}>
-                    {opt.descripcion} {opt.precio_extra ? `(+${opt.precio_extra}€)` : ''}
+                    {getOptionDescription(opt)} {opt.precio_extra ? `(+${opt.precio_extra}€)` : ''}
                   </option>
                 ))}
               </select>
               
               {opcionSeleccionada && (
                 <div className="selected-option">
-                  <span>{opcionSeleccionada.descripcion}</span>
+                  <span>{getOptionDescription(opcionSeleccionada)}</span>
                   <button 
                     className="clear-option"
                     onClick={() => setOpcionSeleccionada(null)}
-                    aria-label="Quitar opción seleccionada"
+                    aria-label={texts.quitarOpcion}
                   >
                     &times;
                   </button>
@@ -150,7 +190,7 @@ const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
           <div className="product-image-container">
             <img
               src={imagenPrincipal}
-              alt={varianteActual.Nombre || producto.Nombre}
+              alt={getVariantName(varianteActual)}
               className="product-image"
               onError={(e) => {
                 e.target.onerror = null;
@@ -162,7 +202,7 @@ const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
 
           <div className="product-info">
             <h3 className="product-variant-name">
-              {varianteActual.Nombre || producto.Nombre}
+              {getVariantName(varianteActual)}
             </h3>
             
             {varianteActual.Descripcion && (
@@ -198,7 +238,7 @@ const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
         {/* Footer del Modal */}
         <footer className="modal-footer">
           <div className="total-price">
-            Total: <strong>{precioTotal.toFixed(2)}€</strong>
+            {texts.total}: <strong>{precioTotal.toFixed(2)}€</strong>
           </div>
           
           <button
@@ -207,9 +247,9 @@ const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
             disabled={loading}
           >
             {loading ? (
-              <span className="loading-indicator">Procesando...</span>
+              <span className="loading-indicator">{texts.procesando}</span>
             ) : (
-              `Añadir al carrito (${cantidad})`
+              `${texts.anadirAlCarrito} (${cantidad})`
             )}
           </button>
         </footer>
@@ -223,11 +263,13 @@ Variantes.propTypes = {
   producto: PropTypes.shape({
     id_producto: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
     Nombre: PropTypes.string.isRequired,
+    'N-Ingles': PropTypes.string,
     categoria: PropTypes.string,
     variantes: PropTypes.arrayOf(
       PropTypes.shape({
         id_variante: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
         Nombre: PropTypes.string,
+        Ingles: PropTypes.string,
         Precio: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
         Descripcion: PropTypes.string,
         imagenes: PropTypes.arrayOf(PropTypes.string)
@@ -237,6 +279,7 @@ Variantes.propTypes = {
       PropTypes.shape({
         id_opcion: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
         descripcion: PropTypes.string.isRequired,
+        ingles: PropTypes.string,
         precio_extra: PropTypes.number
       })
     )

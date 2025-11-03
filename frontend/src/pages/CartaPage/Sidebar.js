@@ -21,7 +21,7 @@ const useCategoryIcon = (category) => {
   useEffect(() => {
     const verifyImage = async () => {
       // Verificar imagen de la API primero
-      const apiIconUrl = category.Url_icono || category.icono || category.icon_url;
+      const apiIconUrl = category.icono;
       
       if (apiIconUrl && await checkImageExists(apiIconUrl)) {
         setIconUrl(apiIconUrl);
@@ -35,14 +35,9 @@ const useCategoryIcon = (category) => {
     };
     
     verifyImage();
-  }, [category.Url_icono, category.icono, category.icon_url]);
+  }, [category.icono]);
   
   return iconUrl;
-};
-
-// Función auxiliar para construir nombres de propiedades consistentes
-const getCategoryIcon = (category) => {
-  return category.Url_icono || category.icono || category.icon_url || null;
 };
 
 const buildCategoryTree = (categories) => {
@@ -53,8 +48,7 @@ const buildCategoryTree = (categories) => {
     categoryMap[category.id_categoria] = { 
       ...category, 
       children: [],
-      isExpanded: false,
-      Url_icono: getCategoryIcon(category)
+      isExpanded: false
     };
   });
   
@@ -69,17 +63,17 @@ const buildCategoryTree = (categories) => {
   return rootCategories;
 };
 
-// Función auxiliar para obtener texto traducido
-const getTranslatedCategoryName = (category, t) => {
-  const description = category.descripcion?.toLowerCase?.() || 'sin_categoria';
-  const translationKey = `categoria.${description}`;
-  const translated = t(translationKey);
-  
-  // Si la traducción devuelve la misma clave, usar la descripción original
-  return translated === translationKey ? category.descripcion : translated;
+// Función auxiliar para obtener el nombre de la categoría según el idioma
+const getCategoryName = (category, currentLanguage) => {
+  // Si el idioma es inglés y existe la traducción, usar 'ingles'
+  if (currentLanguage === 'en' && category.ingles) {
+    return category.ingles;
+  }
+  // Por defecto usar 'descripcion'
+  return category.descripcion || 'Sin categoría';
 };
 
-const CategoryItem = React.memo(({ category, onClickCategoria, isParent, t }) => {
+const CategoryItem = React.memo(({ category, onClickCategoria, isParent, currentLanguage }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const iconUrl = useCategoryIcon(category);
 
@@ -96,7 +90,7 @@ const CategoryItem = React.memo(({ category, onClickCategoria, isParent, t }) =>
     }
   }, [isParent, onClickCategoria, category.id_categoria]);
 
-  const displayName = getTranslatedCategoryName(category, t);
+  const displayName = getCategoryName(category, currentLanguage);
   
   return (
     <li className={`sidebar-item ${isParent ? 'parent' : ''}`}>
@@ -107,7 +101,7 @@ const CategoryItem = React.memo(({ category, onClickCategoria, isParent, t }) =>
       >
         <img 
           src={iconUrl} 
-          alt={category.Descripcion} 
+          alt={displayName} 
           className="icono-categoria"
           onError={(e) => {
             if (e.target.src !== '/default.jpg') {
@@ -135,7 +129,7 @@ const CategoryItem = React.memo(({ category, onClickCategoria, isParent, t }) =>
               category={child}
               onClickCategoria={onClickCategoria}
               isParent={child.children.length > 0}
-              t={t}
+              currentLanguage={currentLanguage}
             />
           ))}
         </ul>
@@ -145,7 +139,8 @@ const CategoryItem = React.memo(({ category, onClickCategoria, isParent, t }) =>
 });
 
 const Sidebar = ({ categorias, onClickCategoria }) => {
-  const { t } = useTranslation();
+  const { i18n } = useTranslation();
+  const currentLanguage = i18n.language;
   
   const categoryTree = useMemo(() => {
     if (categorias && categorias.length > 0) {
@@ -156,7 +151,7 @@ const Sidebar = ({ categorias, onClickCategoria }) => {
 
   return (
     <aside className="sidebar">
-      <h2>{t("sidebar.categorias")}</h2>
+      <h2>{currentLanguage === 'en' ? 'Categories' : 'Categorías'}</h2>
       <ul>
         {categoryTree.map(category => (
           <CategoryItem
@@ -164,7 +159,7 @@ const Sidebar = ({ categorias, onClickCategoria }) => {
             category={category}
             onClickCategoria={onClickCategoria}
             isParent={category.children.length > 0}
-            t={t}
+            currentLanguage={currentLanguage}
           />
         ))}
       </ul>
