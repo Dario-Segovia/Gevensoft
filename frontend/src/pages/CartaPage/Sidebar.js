@@ -139,8 +139,7 @@ const CategoryItem = React.memo(({ category, onClickCategoria, isParent, current
 });
 
 const Sidebar = ({ categorias, onClickCategoria }) => {
-  const { i18n } = useTranslation();
-  const currentLanguage = i18n.language;
+  const currentLanguage = localStorage.getItem('i18nextLng') || 'es';
   
   const categoryTree = useMemo(() => {
     if (categorias && categorias.length > 0) {

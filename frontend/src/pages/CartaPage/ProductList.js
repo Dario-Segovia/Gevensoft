@@ -17,8 +17,7 @@ const ProductList = ({ productos }) => {
   const [modalProducto, setModalProducto] = useState(null);
 
   const { agregarAlCarrito } = useCart();
-  const { i18n } = useTranslation();
-  const currentLanguage = i18n.language;
+  const currentLanguage = localStorage.getItem('i18nextLng') || 'es';
 
   useEffect(() => {
     if (productos.length > 0) {

@@ -4,8 +4,7 @@ import "./Nosotros.css";
 import logoLocal from '../../assets/logo.jpg'; 
 
 function Nosotros() {
-  const { i18n } = useTranslation();
-  const currentLanguage = i18n.language;
+  const currentLanguage = localStorage.getItem('i18nextLng') || 'es';
   const [empresa, setEmpresa] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

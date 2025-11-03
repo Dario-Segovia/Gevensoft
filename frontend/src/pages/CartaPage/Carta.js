@@ -8,6 +8,7 @@ function Carta() {
   const [allProductos, setAllProductos] = useState([]);
   const [categoriaSeleccionada, setCategoriaSeleccionada] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [empresa, setEmpresa] = useState(null);
 
   useEffect(() => {
     const loadCategoriasAndProductos = async () => {
@@ -22,6 +23,11 @@ function Carta() {
         const productosData = await productosResponse.json();
         setProductos(productosData);
         setAllProductos(productosData);
+
+        // Obtener datos de la empresa
+        const empresaResponse = await fetch("http://localhost:3000/api/empresaweb");
+        const empresaData = await empresaResponse.json();
+        setEmpresa(empresaData);
 
       } catch (error) {
         console.error("Error cargando categorías o productos:", error);
@@ -78,6 +84,7 @@ function Carta() {
         onClickCategoria={handleCategoriaClick}
         categoriaSeleccionada={categoriaSeleccionada}
         onMostrarTodos={handleMostrarTodos}
+        empresa={empresa}
       />
       <ProductList productos={productos} loading={loading} />
     </div>

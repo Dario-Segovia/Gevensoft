@@ -9,8 +9,7 @@ import logoLocal from '../assets/logo.jpg';
 import SideCart from "./SideCart";
 
 function Header() {
-  const { i18n } = useTranslation();
-  const currentLanguage = i18n.language;
+  const currentLanguage = localStorage.getItem('i18nextLng') || 'es';
   const { carrito } = useCart();
   const [empresaData, setEmpresaData] = useState(null);
   const [loading, setLoading] = useState(true);

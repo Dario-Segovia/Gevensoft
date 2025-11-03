@@ -5,8 +5,7 @@ import "./Home.css";
 import logoLocal from '../../assets/background.jpg';
 
 function Home() {
-  const { i18n } = useTranslation();
-  const currentLanguage = i18n.language;
+  const currentLanguage = localStorage.getItem('i18nextLng') || 'es';
   const [empresaweb, setEmpresaWeb] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);

@@ -4,8 +4,7 @@ import { FaMapMarkerAlt, FaPhone, FaEnvelope } from "react-icons/fa";
 import './Contacto.css';
 
 function Contacto() {
-  const { i18n } = useTranslation();
-  const currentLanguage = i18n.language;
+  const currentLanguage = localStorage.getItem('i18nextLng') || 'es';
   const [empresaData, setEmpresaData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
