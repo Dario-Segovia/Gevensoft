@@ -4,7 +4,7 @@ const pool = require("../models/db");
 const getEmpresa = async (req, res) => {
   try {
     const [rows] = await pool.query(
-      'SELECT id_empresa, nombre, ingles, razon_social, cif, direccion, codigo_postal, poblacion, provincia, pais, telefono, email, web, logo, firma_factura, texto_footer, texto_footer_ingles, fecha_alta, activo FROM empresa WHERE id_empresa = 1'
+      'SELECT id_empresa, nombre, ingles, razon_social, cif, direccion, codigo_postal, poblacion, provincia, pais, telefono, email, web, logo, firma_factura, texto_footer, texto_footer_ingles, slogan, slogan_ingles, fecha_alta, activo FROM empresa WHERE id_empresa = 1'
     );
     res.json(rows);
   } catch (err) {

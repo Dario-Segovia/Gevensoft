@@ -141,10 +141,10 @@ function Header() {
 
   // Función para obtener el texto del footer según el idioma
   const getFooterText = () => {
-    if (currentLanguage === 'en' && empresaData?.texto_footer_ingles) {
-      return empresaData.texto_footer_ingles;
+    if (currentLanguage === 'en' && empresaData?.slogan_ingles) {
+      return empresaData.slogan_ingles;
     }
-    return empresaData?.texto_footer || texts.slogan;
+    return empresaData?.slogan || texts.slogan;
   };
 
   const handleLogout = () => {
