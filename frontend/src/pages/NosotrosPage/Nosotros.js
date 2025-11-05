@@ -13,10 +13,19 @@ function Nosotros() {
     const fetchEmpresa = async () => {
       try {
         const res = await fetch("http://localhost:3000/api/empresa");
+        if (!res.ok) {
+          throw new Error('Error en la respuesta de la API');
+        }
         const data = await res.json();
-        setEmpresa(data[0]);
+        // Verificar si hay datos válidos
+        if (data && data.length > 0 && data[0]) {
+          setEmpresa(data[0]);
+        } else {
+          setEmpresa({}); // Objeto vacío si no hay datos
+        }
       } catch (err) {
         setError(currentLanguage === 'en' ? 'Error loading information' : 'Error al cargar la información');
+        setEmpresa({}); // Objeto vacío en caso de error
       } finally {
         setLoading(false);
       }
@@ -25,13 +34,57 @@ function Nosotros() {
     fetchEmpresa();
   }, [currentLanguage]);
 
+  // Función para obtener el nombre de la empresa según el idioma
+  const getCompanyName = () => {
+    if (currentLanguage === 'en' && empresa?.ingles) {
+      return empresa.ingles;
+    }
+    return empresa?.nombre || (currentLanguage === 'en' ? 'Our Company' : 'Nuestra Empresa');
+  };
+
+  // Función para obtener el texto del footer según el idioma
+  const getFooterText = () => {
+    if (currentLanguage === 'en' && empresa?.texto_footer_ingles) {
+      return empresa.texto_footer_ingles;
+    }
+    return empresa?.texto_footer || (currentLanguage === 'en' ? 'Thank you for trusting us' : 'Gracias por confiar en nosotros');
+  };
+
+  // Función para obtener la razón social
+  const getRazonSocial = () => {
+    return empresa?.razon_social || (currentLanguage === 'en' 
+      ? 'We are a company committed to excellence and customer satisfaction' 
+      : 'Somos una empresa comprometida con la excelencia y la satisfacción del cliente');
+  };
+
+  // Función para obtener el año de fundación
+  const getFundacionYear = () => {
+    if (empresa?.fecha_alta) {
+      return new Date(empresa.fecha_alta).getFullYear();
+    }
+    return currentLanguage === 'en' ? '2023' : '2023';
+  };
+
+  // Función para obtener la dirección completa
+  const getDireccionCompleta = () => {
+    if (!empresa?.direccion) {
+      return currentLanguage === 'en' ? 'Address not available' : 'Dirección no disponible';
+    }
+    
+    const parts = [
+      empresa.direccion,
+      empresa.codigo_postal,
+      empresa.poblacion,
+      empresa.provincia,
+      empresa.pais
+    ].filter(part => part && part.trim() !== '');
+    
+    return parts.join(', ');
+  };
+
   // Función MEJORADA para construir la URL del logo
   const getLogoUrl = useCallback(() => {
-    if (logoError) {
-      return logoLocal;
-    }
-
-    if (!empresa?.logo) {
+    if (logoError || !empresa?.logo) {
       return logoLocal;
     }
     
@@ -55,22 +108,6 @@ function Nosotros() {
     }
   }, [logoLocal]);
 
-  // Función para obtener el nombre de la empresa según el idioma
-  const getCompanyName = () => {
-    if (currentLanguage === 'en' && empresa?.ingles) {
-      return empresa.ingles;
-    }
-    return empresa?.nombre || (currentLanguage === 'en' ? 'Our Company' : 'Nuestra Empresa');
-  };
-
-  // Función para obtener el texto del footer según el idioma
-  const getFooterText = () => {
-    if (currentLanguage === 'en' && empresa?.texto_footer_ingles) {
-      return empresa.texto_footer_ingles;
-    }
-    return empresa?.texto_footer || (currentLanguage === 'en' ? 'Thank you for trusting us' : 'Gracias por confiar en nosotros');
-  };
-
   // Textos según idioma
   const texts = {
     sobre: currentLanguage === 'en' ? 'About' : 'Sobre',
@@ -82,11 +119,13 @@ function Nosotros() {
     calidad: currentLanguage === 'en' ? 'Uncompromising quality' : 'Calidad sin compromisos',
     transparencia: currentLanguage === 'en' ? 'Total transparency' : 'Transparencia total',
     ubicacion: currentLanguage === 'en' ? 'Location' : 'Ubicación',
-    cargando: currentLanguage === 'en' ? 'Loading...' : 'Cargando...'
+    cargando: currentLanguage === 'en' ? 'Loading...' : 'Cargando...',
+    error_info: currentLanguage === 'en' ? 'Error loading information' : 'Error al cargar la información',
+    informacion_no_disponible: currentLanguage === 'en' ? 'Information not available' : 'Información no disponible'
   };
 
   if (loading) return <div className="loading">{texts.cargando}</div>;
-  if (error) return <div className="error">{error}</div>;
+  if (error && !empresa) return <div className="error">{texts.error_info}</div>;
 
   const logoUrl = getLogoUrl();
 
@@ -96,7 +135,7 @@ function Nosotros() {
         <h1>{texts.sobre} {getCompanyName()}</h1>
         <img 
           src={logoUrl}
-          alt="Logo del restaurante" 
+          alt={currentLanguage === 'en' ? 'Company logo' : 'Logo de la empresa'} 
           className="header-logo"
           onError={handleLogoError}
         />
@@ -104,8 +143,8 @@ function Nosotros() {
 
       <section className="descripcion">
         <h2>{texts.quienes_somos}</h2>
-        <p>{empresa?.razon_social}</p>
-        <p>{texts.fundada} {new Date(empresa?.fecha_alta).getFullYear()}</p>
+        <p>{getRazonSocial()}</p>
+        <p>{texts.fundada} {getFundacionYear()}</p>
       </section>
 
       <section className="valores">
@@ -120,16 +159,24 @@ function Nosotros() {
 
       <section className="ubicacion">
         <h2>{texts.ubicacion}</h2>
-        <p>
-          {empresa?.direccion}, {empresa?.codigo_postal}
-        </p>
-        <p>
-          {empresa?.poblacion}, {empresa?.provincia}, {empresa?.pais}
-        </p>
+        <p>{getDireccionCompleta()}</p>
       </section>
+
+      {empresa?.telefono && (
+        <section className="contacto">
+          <h2>{currentLanguage === 'en' ? 'Contact' : 'Contacto'}</h2>
+          <p>{empresa.telefono}</p>
+          {empresa.email && <p>{empresa.email}</p>}
+        </section>
+      )}
 
       <footer className="footer-nosotros">
         {getFooterText()}
+        {error && (
+          <div className="warning-message">
+            ⚠️ {currentLanguage === 'en' ? 'Some information may not be up to date' : 'Alguna información podría no estar actualizada'}
+          </div>
+        )}
       </footer>
     </div>
   );

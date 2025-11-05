@@ -1,101 +1,166 @@
 /* Nosotros.css */
 
 .nosotros-container {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 2rem;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    color: #333;
-    line-height: 1.6;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  line-height: 1.6;
+  min-height: 70vh;
+}
+
+.hero {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.logo {
+  max-width: 150px;
+  margin-bottom: 1rem;
+}
+
+/* Estilos específicos para la imagen en la página Nosotros - MÁS GRANDE */
+.nosotros-container .header-logo {
+  max-width: 200px; /* Imagen mucho más grande */
+  width: 100%;
+  height: auto;
+  margin: 2rem 0;
+  border-radius: 12px;
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s ease;
+}
+
+.nosotros-container .header-logo:hover {
+  transform: scale(1.03);
+}
+
+.hero h1 {
+  font-size: 2.5rem;
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.descripcion, .valores, .ubicacion, .contacto {
+  margin-bottom: 2.5rem;
+  padding: 1.5rem;
+  background-color: #f8f9fa;
+  border-radius: 10px;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.descripcion h2,
+.valores h2,
+.ubicacion h2,
+.contacto h2 {
+  font-size: 1.8rem;
+  color: #34495e;
+  margin-bottom: 1rem;
+  border-left: 4px solid #3498db;
+  padding-left: 0.75rem;
+}
+
+.descripcion p {
+  color: #555;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.valores ul {
+  list-style: none;
+  padding: 0;
+  display: flex;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.valores li {
+  background-color: #ecf0f1;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  flex: 1 1 120px;
+  text-align: center;
+}
+
+.ubicacion p, .contacto p {
+  color: #555;
+  margin-bottom: 0.5rem;
+}
+
+.footer-nosotros {
+  border-top: 1px solid #ccc;
+  padding-top: 1.5rem;
+  text-align: center;
+  font-style: italic;
+  color: #777;
+  margin-top: 2rem;
+}
+
+/* Estados de carga y error */
+.loading, .error {
+  text-align: center;
+  padding: 3rem 2rem;
+  font-size: 1.2rem;
+  border-radius: 8px;
+  margin: 2rem auto;
+  max-width: 600px;
+}
+
+.loading {
+  color: #666;
+  background-color: #f8f9fa;
+  border: 1px solid #e9ecef;
+}
+
+.error {
+  color: #d32f2f;
+  background-color: #ffebee;
+  border: 1px solid #f44336;
+}
+
+.warning-message {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #ffa726;
+  font-style: italic;
+}
+
+/* Estilos para cuando no hay datos disponibles */
+.descripcion p:empty::before,
+.ubicacion p:empty::before {
+  content: "Información no disponible";
+  color: #999;
+  font-style: italic;
+}
+
+@media (max-width: 768px) {
+  .valores ul {
+    flex-direction: column;
+    align-items: stretch;
   }
   
-  .hero {
-    text-align: center;
-    margin-bottom: 3rem;
-  }
-  
-  .logo {
-    max-width: 150px;
-    margin-bottom: 1rem;
-  }
-  
-  /* Estilos específicos para la imagen en la página Nosotros - MÁS GRANDE */
   .nosotros-container .header-logo {
-    max-width: 200px; /* Imagen mucho más grande */
-    width: 100%;
-    height: auto;
-    margin: 2rem 0;
-    border-radius: 12px;
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
-    transition: transform 0.3s ease;
-  }
-  
-  .nosotros-container .header-logo:hover {
-    transform: scale(1.03);
+    max-width: 300px; /* Aún grande pero se adapta a móviles */
   }
   
   .hero h1 {
-    font-size: 2.5rem;
-    color: #2c3e50;
-    margin-bottom: 0.5rem;
+    font-size: 2rem;
   }
   
-  .descripcion, .valores, .ubicacion {
-    margin-bottom: 2.5rem;
+  .descripcion, .valores, .ubicacion, .contacto {
+    padding: 1rem;
+    margin-bottom: 2rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .nosotros-container .header-logo {
+    max-width: 250px; /* Un poco más pequeño en móviles muy pequeños */
   }
   
-  .descripcion h2,
-  .valores h2,
-  .ubicacion h2 {
-    font-size: 1.8rem;
-    color: #34495e;
-    margin-bottom: 1rem;
-    border-left: 4px solid #3498db;
-    padding-left: 0.75rem;
+  .loading, .error {
+    padding: 2rem 1rem;
+    margin: 1rem;
   }
-  
-  .valores ul {
-    list-style: none;
-    padding: 0;
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
-  
-  .valores li {
-    background-color: #ecf0f1;
-    padding: 0.75rem 1rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    flex: 1 1 120px;
-    text-align: center;
-  }
-  
-  .footer-nosotros {
-    border-top: 1px solid #ccc;
-    padding-top: 1.5rem;
-    text-align: center;
-    font-style: italic;
-    color: #777;
-  }
-  
-  @media (max-width: 768px) {
-    .valores ul {
-      flex-direction: column;
-      align-items: stretch;
-    }
-    
-    .nosotros-container .header-logo {
-      max-width: 300px; /* Aún grande pero se adapta a móviles */
-    }
-    
-    .hero h1 {
-      font-size: 2rem;
-    }
-  }
-  
-  @media (max-width: 480px) {
-    .nosotros-container .header-logo {
-      max-width: 250px; /* Un poco más pequeño en móviles muy pequeños */
-    }
-  }
+}
