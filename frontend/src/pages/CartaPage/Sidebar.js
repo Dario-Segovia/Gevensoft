@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo, useCallback } from "react";
-import { useTranslation } from "react-i18next";
 import "./Sidebar.css";
 
 // Función para verificar si la imagen existe
@@ -29,9 +28,9 @@ const useCategoryIcon = (category) => {
       }
       
       // Fallback a imagen local
-      const localIconUrl = `/default.jpg`;
+      const localIconUrl = `/IMG/default.jpg`;
       const localExists = await checkImageExists(localIconUrl);
-      setIconUrl(localExists ? localIconUrl : '/default.jpg');
+      setIconUrl(localExists ? localIconUrl : '/IMG/default.jpg');
     };
     
     verifyImage();

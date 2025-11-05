@@ -1,5 +1,4 @@
-import { useState, useEffect } from "react";
-import { useTranslation } from "react-i18next";
+import { useState, useEffect, useCallback } from "react";
 import "./Nosotros.css";
 import logoLocal from '../../assets/logo.jpg'; 
 
@@ -8,6 +7,7 @@ function Nosotros() {
   const [empresa, setEmpresa] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [logoError, setLogoError] = useState(false);
 
   useEffect(() => {
     const fetchEmpresa = async () => {
@@ -25,16 +25,35 @@ function Nosotros() {
     fetchEmpresa();
   }, [currentLanguage]);
 
-  // Función para construir la URL del logo
-  const getLogoUrl = () => {
-    if (!empresa?.logo) return logoLocal;
+  // Función MEJORADA para construir la URL del logo
+  const getLogoUrl = useCallback(() => {
+    if (logoError) {
+      return logoLocal;
+    }
+
+    if (!empresa?.logo) {
+      return logoLocal;
+    }
     
     if (empresa.logo.startsWith('http')) {
       return empresa.logo;
     }
     
     return `http://localhost:3000${empresa.logo.startsWith('/') ? '' : '/'}${empresa.logo}`;
-  };
+  }, [empresa?.logo, logoError]);
+
+  // Handler para errores del logo
+  const handleLogoError = useCallback((e) => {
+    console.warn('Error cargando logo en Nosotros:', e.target.src);
+    
+    if (e.target.src !== logoLocal) {
+      setLogoError(true);
+      e.target.src = logoLocal;
+    } else {
+      e.target.onerror = null;
+      console.error('No se pudo cargar el logo local en Nosotros');
+    }
+  }, [logoLocal]);
 
   // Función para obtener el nombre de la empresa según el idioma
   const getCompanyName = () => {
@@ -42,6 +61,14 @@ function Nosotros() {
       return empresa.ingles;
     }
     return empresa?.nombre || (currentLanguage === 'en' ? 'Our Company' : 'Nuestra Empresa');
+  };
+
+  // Función para obtener el texto del footer según el idioma
+  const getFooterText = () => {
+    if (currentLanguage === 'en' && empresa?.texto_footer_ingles) {
+      return empresa.texto_footer_ingles;
+    }
+    return empresa?.texto_footer || (currentLanguage === 'en' ? 'Thank you for trusting us' : 'Gracias por confiar en nosotros');
   };
 
   // Textos según idioma
@@ -55,21 +82,23 @@ function Nosotros() {
     calidad: currentLanguage === 'en' ? 'Uncompromising quality' : 'Calidad sin compromisos',
     transparencia: currentLanguage === 'en' ? 'Total transparency' : 'Transparencia total',
     ubicacion: currentLanguage === 'en' ? 'Location' : 'Ubicación',
-    texto_footer: currentLanguage === 'en' ? 'Thank you for trusting us' : 'Gracias por confiar en nosotros',
     cargando: currentLanguage === 'en' ? 'Loading...' : 'Cargando...'
   };
 
   if (loading) return <div className="loading">{texts.cargando}</div>;
   if (error) return <div className="error">{error}</div>;
 
+  const logoUrl = getLogoUrl();
+
   return (
     <div className="nosotros-container">
       <div className="hero">
         <h1>{texts.sobre} {getCompanyName()}</h1>
         <img 
-          src={getLogoUrl()}
+          src={logoUrl}
           alt="Logo del restaurante" 
           className="header-logo"
+          onError={handleLogoError}
         />
       </div>
 
@@ -100,7 +129,7 @@ function Nosotros() {
       </section>
 
       <footer className="footer-nosotros">
-        {texts.texto_footer}
+        {getFooterText()}
       </footer>
     </div>
   );

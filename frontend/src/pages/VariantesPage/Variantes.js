@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import "./Variantes.css";
 
 const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
-  // Configuración de URLs
+  // Configuración de URLs - CORREGIDO
   const baseURL = process.env.REACT_APP_API_BASE_URL || "http://localhost:3000";
   const defaultImage = `${baseURL}/IMG/default.jpg`;
 
@@ -12,6 +12,7 @@ const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
   const [opcionSeleccionada, setOpcionSeleccionada] = useState(null);
   const [cantidad, setCantidad] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [imageError, setImageError] = useState(false); // Nuevo estado para controlar errores
 
   // Obtener idioma actual
   const currentLanguage = localStorage.getItem('i18nextLng') || 'es';
@@ -37,6 +38,11 @@ const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
       if (idx >= 0) setIndiceVariante(idx);
     }
   }, [producto, varianteSeleccionada]);
+
+  // Reset image error cuando cambia la variante
+  useEffect(() => {
+    setImageError(false);
+  }, [indiceVariante]);
 
   // Memoización de valores calculados
   const varianteActual = producto?.variantes[indiceVariante] || {};
@@ -69,16 +75,56 @@ const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
   const precioExtra = opcionSeleccionada?.precio_extra || 0;
   const precioTotal = (precioBase + precioExtra) * cantidad;
 
-  const imagenPrincipal = (
-    varianteActual.imagenes?.[0] 
-      ? `${baseURL}${varianteActual.imagenes[0]}`
-      : defaultImage
-  );
+  // Función MEJORADA para construir la URL de la imagen
+  const getImagenPrincipal = useCallback(() => {
+    // Si ya hubo un error, mostrar directamente la imagen por defecto
+    if (imageError) {
+      return defaultImage;
+    }
+
+    // Si no hay imagen de la variante, usar la por defecto
+    if (!varianteActual.imagenes?.[0]) {
+      return defaultImage;
+    }
+
+    const imagenVariante = varianteActual.imagenes[0];
+    
+    // Si la imagen ya es una URL completa, usarla directamente
+    if (imagenVariante.startsWith('http')) {
+      return imagenVariante;
+    }
+    
+    // Si empieza con /, es una ruta absoluta
+    if (imagenVariante.startsWith('/')) {
+      return `${baseURL}${imagenVariante}`;
+    }
+    
+    // Si es una ruta relativa, construir la URL completa
+    return `${baseURL}/${imagenVariante}`;
+  }, [varianteActual.imagenes, imageError, baseURL, defaultImage]);
+
+  const imagenPrincipal = getImagenPrincipal();
+
+  // Handler MEJORADO para errores de imagen
+  const handleImageError = useCallback((e) => {
+    console.warn('Error cargando imagen:', e.target.src);
+    
+    // Solo intentar cargar la imagen por defecto si no es ya la imagen por defecto
+    if (e.target.src !== defaultImage) {
+      setImageError(true);
+      e.target.src = defaultImage;
+    } else {
+      // Si la imagen por defecto también falla, prevenir más intentos
+      e.target.onerror = null;
+      console.error('No se pudo cargar la imagen por defecto');
+    }
+  }, [defaultImage]);
 
   // Handlers optimizados
   const handleCambioVariante = useCallback((idx) => {
     setIndiceVariante(idx);
     setOpcionSeleccionada(null);
+    setImageError(false); // Reset error al cambiar variante
   }, []);
 
   const handleCambioOpcion = useCallback((e) => {
@@ -117,7 +163,7 @@ const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
   }, [producto, varianteActual, opcionSeleccionada, cantidad, onAgregar, onClose, loading]);
 
   if (!producto) return null;
-
+  
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal-content variante-modal" onClick={(e) => e.stopPropagation()}>
@@ -192,10 +238,7 @@ const Variantes = ({ producto, varianteSeleccionada, onClose, onAgregar }) => {
               src={imagenPrincipal}
               alt={getVariantName(varianteActual)}
               className="product-image"
-              onError={(e) => {
-                e.target.onerror = null;
-                e.target.src = defaultImage;
-              }}
+              onError={handleImageError}
               loading="lazy"
             />
           </div>

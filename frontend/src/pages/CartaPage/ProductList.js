@@ -5,7 +5,6 @@ import "./ProductList.css";
 import debounce from "lodash.debounce";
 import { FaShoppingCart } from "react-icons/fa";
 import { useCart } from "../../components/CartContext.jsx";
-import { useTranslation } from "react-i18next";
 import Variantes from "../VariantesPage/Variantes";
 
 const baseURL = "http://localhost:3000";
@@ -15,6 +14,7 @@ const ProductList = ({ productos }) => {
   const [priceRange, setPriceRange] = useState([0, 10]);
   const [sliderValue, setSliderValue] = useState([0, 10]);
   const [modalProducto, setModalProducto] = useState(null);
+  const [imageErrors, setImageErrors] = useState(new Set()); // Nuevo estado para trackear errores
 
   const { agregarAlCarrito } = useCart();
   const currentLanguage = localStorage.getItem('i18nextLng') || 'es';
@@ -54,6 +54,53 @@ const ProductList = ({ productos }) => {
     }
     return producto.DescipcionCorta || '';
   };
+
+  // Función MEJORADA para construir la URL de la imagen
+  const getImagenProducto = useCallback((producto) => {
+    const primeraVariante = producto.variantes && producto.variantes.length > 0
+      ? producto.variantes[0]
+      : null;
+
+    // Si ya hubo un error con este producto, usar directamente la imagen por defecto
+    if (imageErrors.has(producto.id_producto)) {
+      return `${baseURL}/default.jpg`;
+    }
+
+    if (!primeraVariante?.imagenes?.[0]) {
+      return `${baseURL}/default.jpg`;
+    }
+
+    const imagenVariante = primeraVariante.imagenes[0];
+    
+    // Si la imagen ya es una URL completa, usarla directamente
+    if (imagenVariante.startsWith('http')) {
+      return imagenVariante;
+    }
+    
+    // Si empieza con /, es una ruta absoluta
+    if (imagenVariante.startsWith('/')) {
+      return `${baseURL}${imagenVariante}`;
+    }
+    
+    // Si es una ruta relativa, construir la URL completa
+    return `${baseURL}/${imagenVariante}`;
+  }, [imageErrors]);
+
+  // Handler MEJORADO para errores de imagen
+  const handleImageError = useCallback((productoId, e) => {
+    console.warn('Error cargando imagen del producto:', productoId, e.target.src);
+    
+    // Solo intentar cargar la imagen por defecto si no es ya la imagen por defecto
+    if (e.target.src !== `${baseURL}/IMG/default.jpg`) {
+      // Marcar este producto como con error
+      setImageErrors(prev => new Set(prev).add(productoId));
+      e.target.src = `${baseURL}/IMG/default.jpg`;
+    } else {
+      // Si la imagen por defecto también falla, prevenir más intentos
+      e.target.onerror = null;
+      console.error('No se pudo cargar la imagen por defecto para el producto:', productoId);
+    }
+  }, []);
 
   const filteredProducts = productosConPrimeraVariante.filter((producto) => {
     if (!producto) return false;
@@ -125,74 +172,62 @@ const ProductList = ({ productos }) => {
 
       <div className="product-list">
         {filteredProducts.map((producto) => {
-          const primeraVariante =
-            producto.variantes && producto.variantes.length > 0
-              ? producto.variantes[0]
-              : null;
-          const primeraImagen =
-            primeraVariante?.imagenes?.[0]
-              ? `${primeraVariante.imagenes[0]}`
-              : `${baseURL}/default.jpg`;
-
           const productName = getProductName(producto);
           const productDescription = getProductDescription(producto);
+          const imagenProducto = getImagenProducto(producto);
 
           return (
             <div key={producto.id_producto} className="product-card">
-            <div className="product-image-container">
-              <img
-                src={primeraImagen}
-                alt={productName}
-                className="product-image"
-                onError={(e) => {
-                  console.error("Error loading image:", e);
-                  e.target.onerror = null;
-                  e.target.src = `${baseURL}/default.jpg`;
+              <div className="product-image-container">
+                <img
+                  src={imagenProducto}
+                  alt={productName}
+                  className="product-image"
+                  onError={(e) => handleImageError(producto.id_producto, e)}
+                />
+              </div>
+
+              <div className="product-info">
+                <h3 className="product-name">{productName}</h3>
+                <p className="product-description">{productDescription}</p>
+                <p className="product-cost">
+                  {parseFloat(producto.Coste).toFixed(2)} €
+                </p>
+              </div>
+
+              <button
+                className="add-to-cart-button"
+                onClick={() => {
+                  if (producto.variantes && producto.variantes.length === 1) {
+                    agregarAlCarrito({
+                      id_producto: producto.id_producto,
+                      id_item: producto.id_producto,
+                      tipo: "producto",
+                      Nombre: productName,
+                      descripcion: productDescription,
+                      variante: producto.variantes[0],
+                      cantidad: 1,
+                      Coste: parseFloat(producto.variantes[0].Precio ?? producto.variantes[0].Coste ?? producto.Coste ?? 0)
+                    });
+                  } else if (producto.variantes && producto.variantes.length > 1) {
+                    setModalProducto(producto);
+                  } else {
+                    agregarAlCarrito({
+                      id_producto: producto.id_producto,
+                      id_item: producto.id_producto,
+                      tipo: "producto",
+                      Nombre: productName,
+                      descripcion: productDescription,
+                      cantidad: 1,
+                      Coste: parseFloat(producto.Coste ?? 0)
+                    });
+                  }
                 }}
-              />
+                title={texts.agregarAlCarrito}
+              >
+                <FaShoppingCart />
+              </button>
             </div>
-
-            <div className="product-info">
-              <h3 className="product-name">{productName}</h3>
-              <p className="product-description">{productDescription}</p>
-              <p className="product-cost">
-                {parseFloat(producto.Coste).toFixed(2)} €
-              </p>
-            </div>
-
-            <button
-              className="add-to-cart-button"
-              onClick={() => {
-                if (producto.variantes && producto.variantes.length === 1) {
-                  agregarAlCarrito({
-                    id_producto: producto.id_producto,
-                    id_item: producto.id_producto,
-                    tipo: "producto",
-                    Nombre: productName,
-                    descripcion: productDescription,
-                    variante: producto.variantes[0],
-                    cantidad: 1,
-                    Coste: parseFloat(producto.variantes[0].Precio ?? producto.variantes[0].Coste ?? producto.Coste ?? 0)
-                  });
-                } else if (producto.variantes && producto.variantes.length > 1) {
-                  setModalProducto(producto);
-                } else {
-                  agregarAlCarrito({
-                    id_producto: producto.id_producto,
-                    id_item: producto.id_producto,
-                    tipo: "producto",
-                    Nombre: productName,
-                    descripcion: productDescription,
-                    cantidad: 1,
-                    Coste: parseFloat(producto.Coste ?? 0)
-                  });
-                }
-              }}
-              title={texts.agregarAlCarrito}
-            >
-              <FaShoppingCart />
-            </button>
-          </div>
           );
         })}
       </div>

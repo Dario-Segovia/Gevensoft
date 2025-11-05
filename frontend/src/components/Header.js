@@ -4,7 +4,6 @@ import { FaShoppingCart, FaUser, FaSignOutAlt, FaBars, FaTimes } from 'react-ico
 import { useCart } from "../components/CartContext.jsx";
 import LanguageSwitcher from '../LanguageSwitcher';
 import "./Header.css";
-import { useTranslation } from "react-i18next";
 import logoLocal from '../assets/logo.jpg';
 import SideCart from "./SideCart";
 
@@ -18,6 +17,7 @@ function Header() {
   const [sideCartOpen, setSideCartOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [logoError, setLogoError] = useState(false); // Nuevo estado para controlar errores del logo
   const location = useLocation();
 
   // Calcular total de items
@@ -98,16 +98,38 @@ function Header() {
     return () => window.removeEventListener('storage', checkUser);
   }, []);
 
-  // Función para construir la URL del logo
-  const getLogoUrl = () => {
-    if (!empresaData?.logo) return logoLocal;
+  // Función MEJORADA para construir la URL del logo
+  const getLogoUrl = useCallback(() => {
+    // Si ya hubo un error con el logo, usar directamente el logo local
+    if (logoError) {
+      return logoLocal;
+    }
+
+    if (!empresaData?.logo) {
+      return logoLocal;
+    }
     
     if (empresaData.logo.startsWith('http')) {
       return empresaData.logo;
     }
     
     return `http://localhost:3000${empresaData.logo.startsWith('/') ? '' : '/'}${empresaData.logo}`;
-  };
+  }, [empresaData?.logo, logoError]);
+
+  // Handler MEJORADO para errores del logo
+  const handleLogoError = useCallback((e) => {
+    console.warn('Error cargando logo:', e.target.src);
+    
+    // Solo intentar cargar el logo local si no es ya el logo local
+    if (e.target.src !== logoLocal) {
+      setLogoError(true);
+      e.target.src = logoLocal;
+    } else {
+      // Si el logo local también falla, prevenir más intentos
+      e.target.onerror = null;
+      console.error('No se pudo cargar el logo local');
+    }
+  }, [logoLocal]);
 
   // Función para obtener el nombre de la empresa según el idioma
   const getCompanyName = () => {
@@ -155,6 +177,8 @@ function Header() {
     </div>
   );
 
+  const logoUrl = getLogoUrl();
+
   return (
     <>
       <header className={`header ${isScrolled ? 'scrolled' : ''} ${mobileMenuOpen ? 'mobile-open' : ''}`}>
@@ -169,14 +193,12 @@ function Header() {
         <div className="header-branding">
           <Link to="/" className="logo-link" aria-label={texts.home}>
             <img 
-              src={getLogoUrl()}
+              src={logoUrl}
               alt={texts.logoAlt} 
               className="header-logo"
               width="50"
               height="50"
-              onError={(e) => {
-                e.target.src = logoLocal;
-              }}
+              onError={handleLogoError}
             />
             <h1 className="header-title">
               {getCompanyName()}
