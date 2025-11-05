@@ -17,9 +17,12 @@ function Contacto() {
           throw new Error(currentLanguage === 'en' ? 'Error loading information' : 'Error al cargar la información');
         }
         const data = await response.json();
-        setEmpresaData(data[0]);
+        // Verificar si hay datos y si el primer elemento existe
+        setEmpresaData(data && data.length > 0 ? data[0] : {});
       } catch (err) {
         setError(err.message);
+        // Establecer datos vacíos en caso de error
+        setEmpresaData({});
       } finally {
         setLoading(false);
       }
@@ -36,6 +39,11 @@ function Contacto() {
     return empresaData?.nombre || (currentLanguage === 'en' ? 'Our Company' : 'Nuestra Empresa');
   };
 
+  // Función segura para obtener datos de la empresa
+  const getEmpresaData = (field) => {
+    return empresaData?.[field] || (currentLanguage === 'en' ? 'Not available' : 'No disponible');
+  };
+
   // Textos según idioma
   const texts = {
     sobre: currentLanguage === 'en' ? 'About' : 'Sobre',
@@ -43,7 +51,23 @@ function Contacto() {
     telefono: currentLanguage === 'en' ? 'Phone' : 'Teléfono',
     correo_electronico: currentLanguage === 'en' ? 'Email' : 'Correo electrónico',
     cargando: currentLanguage === 'en' ? 'Loading...' : 'Cargando...',
-    error_cargar_info: currentLanguage === 'en' ? 'Error loading information' : 'Error al cargar la información'
+    error_cargar_info: currentLanguage === 'en' ? 'Error loading information' : 'Error al cargar la información',
+    no_disponible: currentLanguage === 'en' ? 'Not available' : 'No disponible'
+  };
+
+  // Función para construir la dirección del mapa de forma segura
+  const getMapAddress = () => {
+    if (!empresaData) return '';
+    
+    const addressParts = [
+      empresaData.direccion,
+      empresaData.codigo_postal,
+      empresaData.poblacion,
+      empresaData.provincia,
+      empresaData.pais
+    ].filter(part => part && part.trim() !== ''); // Filtrar partes vacías
+
+    return addressParts.join(', ');
   };
 
   if (loading) return <div className="loading">{texts.cargando}</div>;
@@ -62,9 +86,9 @@ function Contacto() {
           <FaMapMarkerAlt className="contact-icon" />
           <div>
             <h3>{texts.ubicacion}</h3>
-            <p>{empresaData.direccion}</p>
-            <p>{empresaData.codigo_postal} {empresaData.poblacion}</p>
-            <p>{empresaData.provincia}, {empresaData.pais}</p>
+            <p>{getEmpresaData('direccion')}</p>
+            <p>{getEmpresaData('codigo_postal')} {getEmpresaData('poblacion')}</p>
+            <p>{getEmpresaData('provincia')}, {getEmpresaData('pais')}</p>
           </div>
         </div>
 
@@ -72,7 +96,7 @@ function Contacto() {
           <FaPhone className="contact-icon" />
           <div>
             <h3>{texts.telefono}</h3>
-            <p>{empresaData.telefono}</p>
+            <p>{getEmpresaData('telefono')}</p>
           </div>
         </div>
 
@@ -80,7 +104,7 @@ function Contacto() {
           <FaEnvelope className="contact-icon" />
           <div>
             <h3>{texts.correo_electronico}</h3>
-            <p>{empresaData.email}</p>
+            <p>{getEmpresaData('email')}</p>
           </div>
         </div>
       </div>
@@ -88,7 +112,7 @@ function Contacto() {
       <div className="map-section">
         <iframe
           title="ubicacion"
-          src={`https://maps.google.com/maps?q=${encodeURIComponent(`${empresaData.direccion}, ${empresaData.codigo_postal}, ${empresaData.poblacion}, ${empresaData.provincia}, ${empresaData.pais}`)}&output=embed`}
+          src={`https://maps.google.com/maps?q=${encodeURIComponent(getMapAddress())}&output=embed`}
           width="100%"
           height="400"
           style={{ border: 0 }}
