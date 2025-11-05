@@ -38,7 +38,8 @@ const getEmpresaWeb = async (req, res) => {
         \`Customer_appreciated-Ingles\` as Customer_appreciated_ingles,
         \`Contact_title-Ingles\` as Contact_title_ingles,
         \`Contact_text-Ingles\` as Contact_text_ingles,
-        url_image
+        url_image,
+        all_category
       FROM empresa_web WHERE id_empresa = 1`
     );
     res.json(rows);

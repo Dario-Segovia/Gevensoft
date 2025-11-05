@@ -27,7 +27,8 @@ function Carta() {
         // Obtener datos de la empresa
         const empresaResponse = await fetch("http://localhost:3000/api/empresaweb");
         const empresaData = await empresaResponse.json();
-        setEmpresa(empresaData);
+        // Asumiendo que la API devuelve un array, tomamos el primer elemento
+        setEmpresa(empresaData[0] || empresaData);
 
       } catch (error) {
         console.error("Error cargando categorías o productos:", error);
